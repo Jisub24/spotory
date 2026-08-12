@@ -1,36 +1,187 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Spotory
 
-## Getting Started
+> "장소마다 쌓인 순간들이 시간이 지나면 하나의 이야기가 된다"
 
-First, run the development server:
+## 프로젝트 소개
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Spotory는 **Spot(장소)** 과 **Story(이야기)** 를 합친 이름입니다.
+
+장소는 기록을 분류하는 태그가 아니라, 기록이 쌓이는 하나의 단위입니다. 같은 장소를 다시 방문할 때마다 남긴 기록은 그 장소의 페이지 위에 차곡차곡 더해지고, 시간이 지날수록 그 장소만의 이야기가 두터워집니다.
+
+## 기획 배경
+
+Spotory는 "내가 어디를 다녀왔는가"가 아니라 "이 장소에서 내 삶에 어떤 순간들이 쌓였는가"에 초점을 맞춥니다.
+
+사진 한 장과 짧은 코멘트만으로 기록을 남길 수 있는 가벼운 로그형 UX를 통해, 부담 없이 지속할 수 있는 개인 기록 습관을 유도하는 것을 목표로 합니다.
+
+## Spotory의 차별점
+
+동일 장소의 재방문 기록을 관리하는 기능 자체는 일본 앱 '여행 추억 지도'의 유료 기능, 그리고 'RILO', 'RONDO' 등 위치 기반 기록 앱들에서도 부분적으로 확인됩니다. 다만 이들은 하루 단위 타임라인이나 자동 위치 추적을 기본 구조로 삼고 있습니다.
+
+Spotory는 **장소를 진입 단위로 삼아 의도적인 기록이 쌓이는 장소별 누적 타임라인**을 핵심 경험으로 설계하는 데 집중합니다.
+
+| 항목 | 내용 |
+|---|---|
+| 기록의 단위 | 하루/이동 경로가 아니라 장소 하나하나 |
+| 기록 방식 | 사진 1장 + 짧은 코멘트 중심의 가벼운 기록 |
+| 탐색 방식 | 같은 장소에 쌓인 기록을 연도별 타임라인으로 탐색 |
+| 이야기화 | 기록이 쌓인 장소를 AI가 하나의 이야기처럼 요약 |
+
+Spotory라는 이름은 장소(Spot)에 쌓인 기록이 곧 이야기(Story)가 된다는 의미를 담고 있습니다. 이 의미를 소개 문구로만 두지 않고 실제 기능으로 구현하기 위해, 한 장소에 기록이 일정 개수 이상 쌓이면 AI가 그 기록들을 읽고 장소의 성격과 방문 패턴을 짧은 이야기로 요약해주는 기능을 둡니다. 정량적인 통계로 위치 데이터를 분석하는 기존 서비스들과 달리, 사용자가 직접 남긴 서술형 기록을 그대로 재료로 삼아 서사를 만들어낸다는 점이 Spotory만의 경험입니다.
+
+## 핵심 사용자 흐름
+
+> 아래 흐름은 설계된 목표 흐름이며, 현재 구현 단계는 [주요 기능](#주요-기능) 및 [Roadmap](#개발-일정--roadmap)을 참고해주세요.
+
+1. 지도에서 장소를 검색하고 마커를 확인한다. 마커에는 해당 장소에 남긴 기록 개수가 뱃지로 표시된다.
+2. 마커를 클릭해 장소 상세 화면으로 진입한다. 기본적으로 해당 장소의 전체 로그가 최신순으로 나열된다.
+3. 연도 슬라이더를 움직여 특정 연도의 기록으로 빠르게 이동한다. 슬라이더는 전체 리스트를 대체하지 않고 그 위에 얹히는 보조 내비게이션이다.
+4. `+` 버튼으로 새 로그를 작성한다. 사진, 날짜, 짧은 코멘트, 함께한 사람을 입력해 20초 내외로 기록을 남긴다.
+5. 장소에 기록이 3개 이상 쌓이면 상세 화면 상단에서 AI가 요약한 이 장소의 성격과 방문 패턴을 확인할 수 있다.
+
+## 주요 기능
+
+체크된 항목은 구현 완료, 체크되지 않은 항목은 개발 예정입니다.
+
+**데이터 모델**
+- [ ] `places(id, name, lat, lng, created_by)` / `memories(id, place_id, user_id, photo_urls, comment, memory_date, companion)` 스키마
+- [ ] RLS 정책 및 Storage 버킷 구성
+
+**인증**
+- [ ] Supabase Auth 이메일 회원가입 / 로그인
+- [ ] 로그인 상태에 따른 라우팅 가드
+
+**지도**
+- [ ] Kakao Map 렌더링
+- [ ] 장소 검색 및 마커 표시
+- [ ] 커스텀 오버레이 스타일링
+
+**기록 CRUD**
+- [ ] 사진(다중) / 날짜 / 코멘트 / 동행인 입력 폼
+- [ ] 기록 등록, 수정, 삭제
+- [ ] 장소별 기록 리스트 (기본: 최신순 전체 노출)
+
+**시간 타임라인**
+- [ ] 장소별 기록 연도 그룹핑
+- [ ] 연도 슬라이더 UI 및 인터랙션
+- [ ] 지도-타임라인 상태 동기화
+- [ ] 기록 0~1개 장소 예외 처리
+
+**AI 장소 요약**
+- [ ] 장소별 기록(코멘트, 날짜, 시간대, 동행인)을 GPT-4o-mini로 종합해 방문 패턴/톤 2~3문장 요약
+- [ ] 짧은 태그 2~3개 생성
+- [ ] 기록 3개 이상 쌓인 장소에서만 노출
+- [ ] 결과 Supabase 캐싱, 신규 기록 일정 개수 누적 시에만 재생성
+
+**완성도**
+- [ ] 마커에 기억 개수 뱃지
+- [ ] 로딩 / 에러 / 빈 상태 UI
+- [ ] 반응형 레이아웃
+- [ ] Vercel 배포
+
+## 기술 스택
+
+| 영역 | 기술 |
+|---|---|
+| Frontend | Next.js, TypeScript, Tailwind CSS |
+| Map API | Kakao Maps API *(연동 예정)* |
+| AI | OpenAI API, GPT-4o-mini *(연동 예정)* |
+| Backend | Supabase (Auth, Database, Storage) *(연동 예정)* |
+| Distribution | Vercel *(배포 예정)* |
+
+## 프로젝트 구조
+
+```
+src/
+├── app/
+│   ├── page.tsx                    # 지도 홈
+│   ├── login/                      # 로그인
+│   ├── auth/callback/              # Supabase Auth 콜백
+│   ├── places/[placeId]/           # 장소 상세
+│   ├── places/[placeId]/new/       # 기록 작성
+│   └── api/story/                  # AI 장소 요약 API
+├── components/
+│   ├── map/                        # 지도, 마커, 검색 오버레이
+│   ├── memory/                     # 기록 카드, 기록 작성 폼
+│   ├── place/                      # 기록 리스트, 요약 카드, 연도 슬라이더
+│   └── ui/                         # 공용 UI 컴포넌트
+├── hooks/                          # 장소/기록 데이터 훅
+├── lib/
+│   ├── kakao/                      # Kakao SDK 로더
+│   ├── openai/                     # 장소 요약 생성 로직
+│   └── supabase/                   # Supabase 클라이언트
+└── types/                          # 도메인 타입, DB 타입
+
+supabase/
+└── migrations/                     # DB 마이그레이션
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 기술적 의사결정 / 트러블슈팅
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+개발 과정에서 실제 사례가 생기면 이 섹션에 추가할 예정입니다.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 개발 일정 / Roadmap
 
-## Learn More
+총 개발 기간 4주(30일), 1인 개발.
 
-To learn more about Next.js, take a look at the following resources:
+**1주차 - 로그인 + 지도 + DB 연결**
+- [x] 프로젝트 셋업 (Next.js + TypeScript, Git)
+- [ ] Supabase 프로젝트 생성 및 클라이언트 연동
+- [ ] 이메일 회원가입, 로그인, 세션 관리, 라우팅 가드
+- [ ] DB 스키마 설계(`places`, `memories`) 및 RLS 정책 작성
+- [ ] Kakao Map SDK 연동
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+완료 기준: 로그인 상태에서 지도가 뜨고 DB 연결이 확인된 상태
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+**2주차 - 장소별 사진, 날짜, 코멘트 기록 및 조회**
+- [ ] Kakao 장소 검색, 마커 표시
+- [ ] 커스텀 마커 오버레이, 장소 클릭 시 저장 로직
+- [ ] 기록 작성 폼(사진, 날짜, 코멘트, 동행인), 이미지 업로드
+- [ ] 기록 저장, 조회, 수정, 삭제
 
-## Deploy on Vercel
+완료 기준: 장소별로 기록을 남기고 리스트로 조회 가능
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**3주차 - 연도 슬라이더로 장소별 기록 탐색**
+- [ ] 기록 연도별 그룹핑 설계
+- [ ] 장소 상세 로그 리스트 UI
+- [ ] 연도 슬라이더 UI, 인터랙션
+- [ ] 지도-장소 상세 상태 동기화
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+완료 기준: 장소 상세에서 연도 슬라이더로 과거 기록 탐색 가능
+
+**4주차 - 완성도, AI 요약, 배포, 문서화**
+- [ ] 마커 기억 개수 뱃지, 반응형, 로딩, 에러, 빈 상태 UI
+- [ ] AI 장소 요약(프롬프트 설계, API 연동, 캐싱, UI)
+- [ ] Vercel 배포 및 점검
+- [ ] README 작성, 코드 정리
+- [ ] 여유 시 [향후 개선 사항](#향후-개선-사항) 시도
+
+완료 기준: 배포 완료, 문서화 완료, 제출 준비 완료
+
+## 향후 개선 사항
+
+여유가 되는 대로 진행 예정인 항목입니다.
+
+- 지역별 카테고리 보기
+- 사람 필터 (함께한 사람별 기록 보기)
+- 예전 오늘 (n년 전 오늘 기록 노출)
+
+## 실행 방법
+
+```bash
+# 1. 의존성 설치
+npm install
+
+# 2. 환경 변수 설정
+cp .env.local.example .env.local
+# .env.local에 아래 값 입력
+# NEXT_PUBLIC_SUPABASE_URL=
+# NEXT_PUBLIC_SUPABASE_ANON_KEY=
+# NEXT_PUBLIC_KAKAO_MAP_KEY=
+# OPENAI_API_KEY=
+
+# 3. 개발 서버 실행
+npm run dev
+```
+
+브라우저에서 [http://localhost:3000](http://localhost:3000) 접속.
