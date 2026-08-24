@@ -3,8 +3,27 @@
 import { useEffect, useRef, useState } from "react";
 import { loadGoogleMapsSdk } from "@/lib/google/loadGoogleMapsSdk";
 
-// 서울시청 - 검색/현재 위치 기능이 아직 없어서 임시로 잡아둔 기본 좌표
+// 서울시청 - 위치 권한이 없거나 거부된 경우의 대체 좌표
 const DEFAULT_CENTER = { lat: 37.5665, lng: 126.978 };
+
+function getCurrentPositionOrDefault(): Promise<{ lat: number; lng: number }> {
+  return new Promise((resolve) => {
+    if (!navigator.geolocation) {
+      resolve(DEFAULT_CENTER);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) =>
+        resolve({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        }),
+      () => resolve(DEFAULT_CENTER),
+      { timeout: 5000 }
+    );
+  });
+}
 
 export function GoogleMap() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -15,11 +34,12 @@ export function GoogleMap() {
     let cancelled = false;
 
     loadGoogleMapsSdk()
-      .then(() => {
+      .then(() => getCurrentPositionOrDefault())
+      .then((center) => {
         if (cancelled || !container) return;
 
         new window.google.maps.Map(container, {
-          center: DEFAULT_CENTER,
+          center,
           zoom: 15,
         });
       })
