@@ -52,7 +52,7 @@ Spotory라는 이름은 장소(Spot)에 쌓인 기록이 곧 이야기(Story)가
 - [ ] 로그인 상태에 따른 라우팅 가드
 
 **지도**
-- [ ] Kakao Map 렌더링
+- [ ] Google Map 렌더링
 - [ ] 장소 검색 및 마커 표시
 - [ ] 커스텀 오버레이 스타일링
 
@@ -84,7 +84,7 @@ Spotory라는 이름은 장소(Spot)에 쌓인 기록이 곧 이야기(Story)가
 | 영역 | 기술 |
 |---|---|
 | Frontend | Next.js, TypeScript, Tailwind CSS |
-| Map API | Kakao Maps API *(연동 예정)* |
+| Map API | Google Maps API *(연동 예정)* |
 | AI | OpenAI API, GPT-4o-mini *(연동 예정)* |
 | Backend | Supabase (Auth, Database, Storage) *(연동 예정)* |
 | Distribution | Vercel *(배포 예정)* |
@@ -107,7 +107,7 @@ src/
 │   └── ui/                         # 공용 UI 컴포넌트
 ├── hooks/                          # 장소/기록 데이터 훅
 ├── lib/
-│   ├── kakao/                      # Kakao SDK 로더
+│   ├── google/                     # Google Maps SDK 로더
 │   ├── openai/                     # 장소 요약 생성 로직
 │   └── supabase/                   # Supabase 클라이언트
 └── types/                          # 도메인 타입, DB 타입
@@ -129,12 +129,12 @@ supabase/
 - [ ] Supabase 프로젝트 생성 및 클라이언트 연동
 - [ ] 이메일 회원가입, 로그인, 세션 관리, 라우팅 가드
 - [ ] DB 스키마 설계(`places`, `memories`) 및 RLS 정책 작성
-- [ ] Kakao Map SDK 연동
+- [ ] Google Map SDK 연동
 
 완료 기준: 로그인 상태에서 지도가 뜨고 DB 연결이 확인된 상태
 
 **2주차 - 장소별 사진, 날짜, 코멘트 기록 및 조회**
-- [ ] Kakao 장소 검색, 마커 표시
+- [ ] Google Map 장소 검색, 마커 표시
 - [ ] 커스텀 마커 오버레이, 장소 클릭 시 저장 로직
 - [ ] 기록 작성 폼(사진, 날짜, 코멘트, 동행인), 이미지 업로드
 - [ ] 기록 저장, 조회, 수정, 삭제
@@ -177,7 +177,7 @@ cp .env.local.example .env.local
 # .env.local에 아래 값 입력
 # NEXT_PUBLIC_SUPABASE_URL=
 # NEXT_PUBLIC_SUPABASE_ANON_KEY=
-# NEXT_PUBLIC_KAKAO_MAP_KEY=
+# NEXT_PUBLIC_GOOGLE_MAPS_KEY=
 # OPENAI_API_KEY=
 
 # 3. 개발 서버 실행
