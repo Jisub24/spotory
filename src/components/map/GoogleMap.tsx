@@ -2,6 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import { loadGoogleMapsSdk } from "@/lib/google/loadGoogleMapsSdk";
+import { usePlaces } from "@/hooks/usePlaces";
+import { SearchOverlay } from "./SearchOverlay";
+import { PlaceMarker } from "./PlaceMarker";
 
 // 서울시청 - 위치 권한이 없거나 거부된 경우의 대체 좌표
 const DEFAULT_CENTER = { lat: 37.5665, lng: 126.978 };
@@ -27,7 +30,9 @@ function getCurrentPositionOrDefault(): Promise<{ lat: number; lng: number }> {
 
 export function GoogleMap() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [map, setMap] = useState<google.maps.Map | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const { places } = usePlaces();
 
   useEffect(() => {
     const container = containerRef.current;
@@ -37,11 +42,13 @@ export function GoogleMap() {
       .then(() => getCurrentPositionOrDefault())
       .then((center) => {
         if (cancelled || !container) return;
-
-        new window.google.maps.Map(container, {
-          center,
-          zoom: 15,
-        });
+        setMap(
+          new google.maps.Map(container, {
+            center,
+            zoom: 15,
+            mapId: "DEMO_MAP_ID",
+          })
+        );
       })
       .catch((err: Error) => {
         if (!cancelled) setError(err.message);
@@ -65,5 +72,14 @@ export function GoogleMap() {
     );
   }
 
-  return <div ref={containerRef} className="h-full w-full" />;
+  return (
+    <div className="relative h-full w-full">
+      <div ref={containerRef} className="h-full w-full" />
+      {map && <SearchOverlay map={map} />}
+      {map &&
+        places.map((place) => (
+          <PlaceMarker key={place.id} map={map} place={place} />
+        ))}
+    </div>
+  );
 }

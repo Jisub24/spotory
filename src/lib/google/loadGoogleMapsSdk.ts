@@ -1,16 +1,3 @@
-declare global {
-  interface Window {
-    google: {
-      maps: {
-        Map: new (
-          container: HTMLElement,
-          options: { center: { lat: number; lng: number }; zoom: number }
-        ) => unknown;
-      };
-    };
-  }
-}
-
 let googleMapsSdkPromise: Promise<void> | null = null;
 
 export function loadGoogleMapsSdk(): Promise<void> {
@@ -20,7 +7,7 @@ export function loadGoogleMapsSdk(): Promise<void> {
     );
   }
 
-  if (window.google?.maps) {
+  if (typeof google !== "undefined" && google.maps) {
     return Promise.resolve();
   }
 
@@ -34,7 +21,7 @@ export function loadGoogleMapsSdk(): Promise<void> {
       resolve();
 
     const script = document.createElement("script");
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY}&loading=async&callback=${callbackName}`;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY}&loading=async&libraries=places,marker&callback=${callbackName}`;
     script.async = true;
     script.onerror = () => {
       googleMapsSdkPromise = null;
