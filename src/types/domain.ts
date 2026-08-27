@@ -3,6 +3,7 @@ export interface Place {
   name: string;
   lat: number;
   lng: number;
+  googlePlaceId: string;
   createdBy: string;
   createdAt: string;
 }

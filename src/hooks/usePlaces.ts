@@ -9,6 +9,7 @@ type PlaceRow = {
   name: string;
   lat: number;
   lng: number;
+  google_place_id: string;
   created_by: string;
   created_at: string;
 };
@@ -30,6 +31,7 @@ export function usePlaces() {
             name: row.name,
             lat: row.lat,
             lng: row.lng,
+            googlePlaceId: row.google_place_id,
             createdBy: row.created_by,
             createdAt: row.created_at,
           }))
