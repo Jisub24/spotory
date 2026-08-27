@@ -22,7 +22,7 @@ export default function LoginPage() {
           <button
             type="button"
             onClick={() => setMode(mode === "signIn" ? "signUp" : "signIn")}
-            className="font-medium underline"
+            className="-m-2 p-2 font-medium underline"
           >
             {mode === "signIn" ? "회원가입" : "로그인"}
           </button>
@@ -77,13 +77,13 @@ function AuthForm({ mode }: { mode: "signIn" | "signUp" }) {
           type="email"
           name="email"
           placeholder="이메일"
-          className="w-full rounded border px-3 py-2"
+          className="w-full rounded border px-3 py-3"
         />
         <input
           type="password"
           name="password"
           placeholder="비밀번호"
-          className="w-full rounded border px-3 py-2"
+          className="w-full rounded border px-3 py-3"
         />
 
         {errorToShow && <p className="text-sm text-red-600">{errorToShow}</p>}
@@ -94,7 +94,7 @@ function AuthForm({ mode }: { mode: "signIn" | "signUp" }) {
         <Button
           type="submit"
           disabled={pending}
-          className="w-full rounded bg-black px-3 py-2 text-white disabled:opacity-50"
+          className="w-full rounded bg-black px-3 py-3 text-white disabled:opacity-50"
         >
           {mode === "signIn" ? "로그인" : "회원가입"}
         </Button>

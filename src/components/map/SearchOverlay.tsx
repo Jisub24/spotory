@@ -42,9 +42,8 @@ export function SearchOverlay({ map }: { map: google.maps.Map }) {
   }, [map]);
 
   return (
-    <div
-      ref={containerRef}
-      className="absolute left-1/2 top-4 z-10 w-full max-w-sm -translate-x-1/2 px-4"
-    />
+    <div className="mx-4 min-w-0 max-w-sm flex-1 overflow-hidden rounded-full border border-gray-300 px-2">
+      <div ref={containerRef} />
+    </div>
   );
 }
