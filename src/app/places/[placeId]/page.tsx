@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { MemoryCardMenu } from "@/components/memory/MemoryCardMenu";
 
 type MemoryRow = {
   id: string;
@@ -9,6 +10,27 @@ type MemoryRow = {
   memory_date: string;
   companion: string | null;
 };
+
+// 마지막 글자의 받침 유무로 "와"/"과"를 자동으로 골라 자연스러운 조사를 붙인다.
+function withParticle(word: string): string {
+  const last = word.at(-1) ?? "";
+  const hasFinalConsonant =
+    /[가-힣]/.test(last) && (last.charCodeAt(0) - 0xac00) % 28 !== 0;
+  return `${word}${hasFinalConsonant ? "과" : "와"} 함께 쌓은 이야기`;
+}
+
+// "친구 (박지섭)" 같은 저장 형식을 "친구 박지섭과 함께 쌓은 이야기" 문장으로 바꾼다.
+function formatCompanionSentence(companion: string | null): string {
+  if (!companion) return "";
+  if (companion === "혼자") return "혼자 쌓은 이야기";
+
+  const friendMatch = companion.match(/^친구(?: \((.+)\))?$/);
+  if (friendMatch) {
+    return friendMatch[1] ? withParticle(`친구 ${friendMatch[1]}`) : withParticle("친구");
+  }
+
+  return withParticle(companion);
+}
 
 export default async function PlaceDetailPage({
   params,
@@ -73,8 +95,12 @@ export default async function PlaceDetailPage({
             className="rounded-xl border border-gray-200 bg-white p-4"
           >
             <div className="flex items-center justify-between text-sm text-gray-500">
-              <span>{memory.memory_date.slice(0, 10).replace(/-/g, ".")}</span>
-              {memory.companion && <span>{memory.companion}</span>}
+              <span>
+                {memory.memory_date.slice(0, 10).replace(/-/g, ".")}
+                {memory.companion &&
+                  ` ${formatCompanionSentence(memory.companion)}`}
+              </span>
+              <MemoryCardMenu memoryId={memory.id} />
             </div>
             {memory.photo_urls.length > 0 && (
               <div className="mt-2 flex gap-2 overflow-x-auto">
