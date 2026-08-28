@@ -2,40 +2,21 @@
 
 import { useEffect, useRef, useState } from "react";
 import { loadGoogleMapsSdk } from "@/lib/google/loadGoogleMapsSdk";
-import { usePlaces } from "@/hooks/usePlaces";
+import type { Place } from "@/types/domain";
 import { PlaceMarker } from "./PlaceMarker";
 
-// 서울시청 - 위치 권한이 없거나 거부된 경우의 대체 좌표
-const DEFAULT_CENTER = { lat: 37.5665, lng: 126.978 };
-
-function getCurrentPositionOrDefault(): Promise<{ lat: number; lng: number }> {
-  return new Promise((resolve) => {
-    if (!navigator.geolocation) {
-      resolve(DEFAULT_CENTER);
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      (position) =>
-        resolve({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        }),
-      () => resolve(DEFAULT_CENTER),
-      { timeout: 5000 }
-    );
-  });
-}
-
 export function GoogleMap({
+  places,
+  initialCenter,
   onMapReady,
 }: {
+  places: Place[];
+  initialCenter: { lat: number; lng: number };
   onMapReady?: (map: google.maps.Map) => void;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const { places } = usePlaces();
 
   useEffect(() => {
     const container = containerRef.current;
@@ -53,17 +34,34 @@ export function GoogleMap({
     };
 
     loadGoogleMapsSdk()
-      .then(() => getCurrentPositionOrDefault())
-      .then((center) => {
+      .then(() => {
         if (cancelled || !container) return;
+
+        // 위치 권한 확인을 기다리지 않고, 넘겨받은 기본 좌표로 지도를 바로 띄운다.
         const instance = new google.maps.Map(container, {
-          center,
+          center: initialCenter,
           zoom: 15,
           mapId: "DEMO_MAP_ID",
           mapTypeControl: false,
         });
         setMap(instance);
         onMapReady?.(instance);
+
+        // 위치 권한은 지도가 이미 뜬 뒤, 별도로 물어봐서 되면 그때 살짝 이동만 시킨다.
+        // 응답이 늦거나 거부돼도 사용자는 이미 지도를 보고 있어서 기다릴 필요가 없다.
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              if (cancelled) return;
+              instance.panTo({
+                lat: position.coords.latitude,
+                lng: position.coords.longitude,
+              });
+            },
+            () => {},
+            { timeout: 5000 }
+          );
+        }
       })
       .catch((err: Error) => {
         if (!cancelled) setError(err.message);
@@ -77,6 +75,7 @@ export function GoogleMap({
         container.innerHTML = "";
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onMapReady]);
 
   if (error) {
