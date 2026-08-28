@@ -6,6 +6,7 @@ export interface Place {
   googlePlaceId: string;
   createdBy: string;
   createdAt: string;
+  memoryCount: number;
 }
 
 export interface Memory {

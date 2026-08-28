@@ -12,6 +12,7 @@ type PlaceRow = {
   google_place_id: string;
   created_by: string;
   created_at: string;
+  memories: { count: number }[];
 };
 
 export function usePlaces() {
@@ -23,7 +24,7 @@ export function usePlaces() {
 
     supabase
       .from("places")
-      .select("*")
+      .select("*, memories(count)")
       .then(({ data }) => {
         setPlaces(
           ((data ?? []) as PlaceRow[]).map((row) => ({
@@ -34,6 +35,7 @@ export function usePlaces() {
             googlePlaceId: row.google_place_id,
             createdBy: row.created_by,
             createdAt: row.created_at,
+            memoryCount: row.memories[0]?.count ?? 0,
           }))
         );
         setLoading(false);
