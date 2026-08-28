@@ -1,9 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { MarkerClusterer } from "@googlemaps/markerclusterer";
 import { loadGoogleMapsSdk } from "@/lib/google/loadGoogleMapsSdk";
 import type { Place } from "@/types/domain";
-import { PlaceMarker } from "./PlaceMarker";
+import { createPlaceMarker } from "./createPlaceMarker";
+import { clusterRenderer } from "./clusterRenderer";
 
 export function GoogleMap({
   places,
@@ -17,10 +20,15 @@ export function GoogleMap({
   const containerRef = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // Cloud 스타일이 늦게 도착해서 기본 디자인이 잠깐 보였다가 커스터마이징 된 지도로
+  // 바뀌는 게 눈에 띄어서, 스타일까지 다 입혀질 때까지는 테마색으로 가려둔다.
+  const [styleReady, setStyleReady] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const container = containerRef.current;
     let cancelled = false;
+    let fallbackTimer: ReturnType<typeof setTimeout> | undefined;
 
     // 구글 지도는 API 키/결제 인증에 실패해도 JS 에러를 던지지 않고,
     // 대신 이 전역 콜백을 호출한다. 안 잡아두면 화면엔 빈 박스만 남고
@@ -41,11 +49,25 @@ export function GoogleMap({
         const instance = new google.maps.Map(container, {
           center: initialCenter,
           zoom: 15,
-          mapId: "DEMO_MAP_ID",
+          mapId: "e9ffe44c2fe9bf8d28ccc541",
           mapTypeControl: false,
+          zoomControl: false,
+          cameraControl: false,
+          streetViewControl: false,
+          // Cloud 스타일이 도착하기 전까지 빈 타일 자리에 기본 회색 대신
+          // 우리 테마색이 먼저 보이게 해서, 스타일 전환 시 화면이 덜 튀어 보이게 한다.
+          backgroundColor: "#F0FBF7",
         });
         setMap(instance);
         onMapReady?.(instance);
+
+        google.maps.event.addListenerOnce(instance, "tilesloaded", () => {
+          if (!cancelled) setStyleReady(true);
+        });
+        // tilesloaded가 안 오는 드문 경우를 대비한 폴백.
+        fallbackTimer = setTimeout(() => {
+          if (!cancelled) setStyleReady(true);
+        }, 1500);
 
         // 위치 권한은 지도가 이미 뜬 뒤, 별도로 물어봐서 되면 그때 살짝 이동만 시킨다.
         // 응답이 늦거나 거부돼도 사용자는 이미 지도를 보고 있어서 기다릴 필요가 없다.
@@ -69,6 +91,7 @@ export function GoogleMap({
 
     return () => {
       cancelled = true;
+      if (fallbackTimer) clearTimeout(fallbackTimer);
       // Google Maps SDK엔 인스턴스를 없애는 API가 없어서, 개발 모드 Strict Mode의
       // 마운트→정리→재마운트 사이클에서 지도가 중복 생성되지 않도록 DOM을 직접 비운다.
       if (container) {
@@ -77,6 +100,31 @@ export function GoogleMap({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onMapReady]);
+
+  // 장소 마커들을 만들어서 클러스터러에 한 번에 넘긴다. 클러스터러가 확대 수준에 따라
+  // 가까운 마커들을 하나로 묶어서 보여주고, 확대해 들어가면 다시 낱개로 풀어준다.
+  useEffect(() => {
+    if (!map) return;
+
+    const markers = places.map((place) =>
+      createPlaceMarker({
+        place,
+        onClick: () => router.push(`/places/${place.id}`),
+      })
+    );
+    const clusterer = new MarkerClusterer({
+      map,
+      markers,
+      renderer: clusterRenderer,
+    });
+
+    return () => {
+      clusterer.clearMarkers();
+      markers.forEach((marker) => {
+        marker.map = null;
+      });
+    };
+  }, [map, places, router]);
 
   if (error) {
     return (
@@ -89,10 +137,11 @@ export function GoogleMap({
   return (
     <div className="relative h-full w-full">
       <div ref={containerRef} className="h-full w-full" />
-      {map &&
-        places.map((place) => (
-          <PlaceMarker key={place.id} map={map} place={place} />
-        ))}
+      <div
+        className={`pointer-events-none absolute inset-0 bg-[#F0FBF7] transition-opacity duration-300 ${
+          styleReady ? "opacity-0" : "opacity-100"
+        }`}
+      />
     </div>
   );
 }
