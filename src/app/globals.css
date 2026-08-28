@@ -33,3 +33,12 @@ body {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
+
+/* 검색창(gmp-place-autocomplete)에 WebKit이 기본으로 씌우는 포커스 테두리 제거.
+   인라인 스타일만으로 안 지워질 수 있어 !important로 한 번 더 덮는다. */
+gmp-place-autocomplete:focus,
+gmp-place-autocomplete:focus-within,
+gmp-place-autocomplete:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
