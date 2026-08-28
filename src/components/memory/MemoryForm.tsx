@@ -3,7 +3,11 @@
 import { useActionState, useEffect, useMemo, useRef, useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { Button } from "@/components/ui/Button";
-import { createMemory, type MemoryActionState } from "@/app/places/actions";
+import {
+  createMemory,
+  updateMemory,
+  type MemoryActionState,
+} from "@/app/places/actions";
 import { compressImage } from "@/lib/image/compressImage";
 
 const initialState: MemoryActionState = { error: null };
@@ -15,43 +19,77 @@ type NewPlaceInfo = {
   googlePlaceId: string;
 };
 
+type ExistingMemory = {
+  id: string;
+  placeId: string;
+  photos: { path: string; url: string }[];
+  comment: string;
+  memoryDate: string;
+  companion: string | null;
+};
+
 const COMPANION_TYPES = ["혼자", "가족", "연인", "친구"] as const;
 type CompanionType = (typeof COMPANION_TYPES)[number];
+
+// "친구 (철수, 민지)" 같은 저장 형식을 다시 선택 상태로 되돌린다. (수정 모드 초기값용)
+function parseCompanion(value: string | null): {
+  type: CompanionType | null;
+  friendNames: string;
+} {
+  if (!value) return { type: null, friendNames: "" };
+  const friendMatch = value.match(/^친구(?: \((.+)\))?$/);
+  if (friendMatch) return { type: "친구", friendNames: friendMatch[1] ?? "" };
+  if ((COMPANION_TYPES as readonly string[]).includes(value)) {
+    return { type: value as CompanionType, friendNames: "" };
+  }
+  return { type: null, friendNames: "" };
+}
 
 const MAX_PHOTOS = 10;
 // next.config.ts의 serverActions.bodySizeLimit(20mb)보다 여유를 두고,
 // 서버까지 보내서 실패하기 전에 미리 걸러낸다.
 const MAX_TOTAL_PHOTO_SIZE = 19 * 1024 * 1024;
 
+type PhotoItem =
+  | { kind: "existing"; path: string; url: string }
+  | { kind: "new"; file: File };
+
 export function MemoryForm({
   placeId,
   newPlace,
+  memory,
 }: {
   placeId?: string;
   newPlace?: NewPlaceInfo;
+  memory?: ExistingMemory;
 }) {
   const [state, formAction, pending] = useActionState(
-    createMemory,
+    memory ? updateMemory : createMemory,
     initialState
   );
   // 날짜 입력의 기본값을 오늘로 미리 채워서, 매번 날짜를 직접 고르지 않아도 되게 한다.
   const today = new Date().toISOString().slice(0, 10);
   // 네이티브 date input의 표시 형식은 기기 로캘을 따라가서 우리 마음대로 못 바꾸기 때문에,
   // 실제 input은 투명하게 깔아두고 그 위에 원하는 형식(YYYY.MM.DD)으로 직접 렌더링한다.
-  const [date, setDate] = useState(today);
+  const [date, setDate] = useState(memory?.memoryDate ?? today);
 
-  const [photos, setPhotos] = useState<File[]>([]);
+  // 수정 모드에선 이미 업로드된 사진과 새로 추가하는 사진이 같은 줄에 섞여서 표시/삭제된다.
+  const [photoItems, setPhotoItems] = useState<PhotoItem[]>(
+    memory?.photos.map((p) => ({ kind: "existing" as const, ...p })) ?? []
+  );
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // 실제 제출에 쓰이는 input은 숨겨두고, 탭할 때마다 새로 고른 파일을
-  // 누적된 목록에 이어붙인 뒤 DataTransfer로 그 input의 FileList를 다시 채운다.
+  // 실제 제출에 쓰이는 input은 숨겨두고, 새로 고른 파일들만 DataTransfer로
+  // 그 input의 FileList에 채운다. 기존 사진은 다시 업로드하지 않는다.
   useEffect(() => {
     const dataTransfer = new DataTransfer();
-    photos.forEach((photo) => dataTransfer.items.add(photo));
+    photoItems.forEach((item) => {
+      if (item.kind === "new") dataTransfer.items.add(item.file);
+    });
     if (fileInputRef.current) {
       fileInputRef.current.files = dataTransfer.files;
     }
-  }, [photos]);
+  }, [photoItems]);
 
   const handlePickPhotos = async (e: ChangeEvent<HTMLInputElement>) => {
     const picked = Array.from(e.target.files ?? []);
@@ -61,20 +99,28 @@ export function MemoryForm({
     const compressed = await Promise.all(
       picked.map((file) => compressImage(file))
     );
-    setPhotos((prev) => [...prev, ...compressed].slice(0, MAX_PHOTOS));
+    setPhotoItems((prev) =>
+      [...prev, ...compressed.map((file) => ({ kind: "new" as const, file }))].slice(
+        0,
+        MAX_PHOTOS
+      )
+    );
   };
 
-  const removePhoto = (index: number) => {
-    setPhotos((prev) => prev.filter((_, i) => i !== index));
+  const removePhotoItem = (index: number) => {
+    setPhotoItems((prev) => prev.filter((_, i) => i !== index));
   };
 
   const [sizeError, setSizeError] = useState<string | null>(null);
 
   // 압축이 실패해서 원본이 그대로 남는 경우를 대비해, 서버에 보내기 전에
-  // 총 용량을 한 번 더 확인한다. 여기서 걸러야 "Body exceeded" 같은
-  // 알아보기 힘든 에러 대신 바로 이해할 수 있는 메시지를 보여줄 수 있다.
+  // 새로 추가한 사진들의 총 용량을 한 번 더 확인한다. 여기서 걸러야
+  // "Body exceeded" 같은 알아보기 힘든 에러 대신 바로 이해할 수 있는 메시지를 보여줄 수 있다.
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    const totalSize = photos.reduce((sum, photo) => sum + photo.size, 0);
+    const totalSize = photoItems.reduce(
+      (sum, item) => (item.kind === "new" ? sum + item.file.size : sum),
+      0
+    );
     if (totalSize > MAX_TOTAL_PHOTO_SIZE) {
       e.preventDefault();
       setSizeError("사진 용량을 확인해주세요.");
@@ -83,12 +129,13 @@ export function MemoryForm({
     setSizeError(null);
   };
 
-  const [comment, setComment] = useState("");
+  const [comment, setComment] = useState(memory?.comment ?? "");
 
+  const initialCompanion = parseCompanion(memory?.companion ?? null);
   const [companionType, setCompanionType] = useState<CompanionType | null>(
-    "혼자"
+    memory ? initialCompanion.type : "혼자"
   );
-  const [friendNames, setFriendNames] = useState("");
+  const [friendNames, setFriendNames] = useState(initialCompanion.friendNames);
 
   const companionValue =
     companionType === "친구"
@@ -99,8 +146,16 @@ export function MemoryForm({
 
   return (
     <form action={formAction} onSubmit={handleSubmit} className="space-y-3 p-4">
-      {placeId && <input type="hidden" name="placeId" value={placeId} />}
-      {newPlace && (
+      {memory && (
+        <>
+          <input type="hidden" name="memoryId" value={memory.id} />
+          <input type="hidden" name="placeId" value={memory.placeId} />
+        </>
+      )}
+      {!memory && placeId && (
+        <input type="hidden" name="placeId" value={placeId} />
+      )}
+      {!memory && newPlace && (
         <>
           <input type="hidden" name="name" value={newPlace.name} />
           <input type="hidden" name="lat" value={newPlace.lat} />
@@ -113,7 +168,9 @@ export function MemoryForm({
         </>
       )}
 
-      <h1 className="text-lg font-semibold">{newPlace?.name ?? "새 기록"}</h1>
+      <h1 className="text-lg font-semibold">
+        {memory ? "기록 수정" : (newPlace?.name ?? "새 기록")}
+      </h1>
 
       <p className="text-sm font-medium">사진 등록</p>
       <input
@@ -129,17 +186,45 @@ export function MemoryForm({
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          disabled={photos.length >= MAX_PHOTOS}
+          disabled={photoItems.length >= MAX_PHOTOS}
           className="flex h-20 w-20 shrink-0 flex-col items-center justify-center gap-1 rounded border border-dashed border-gray-300 text-gray-400 disabled:opacity-50"
         >
           <span className="text-2xl leading-none">+</span>
           <span className="text-xs">
-            {photos.length}/{MAX_PHOTOS}
+            {photoItems.length}/{MAX_PHOTOS}
           </span>
         </button>
-        {photos.map((photo, i) => (
-          <PhotoThumb key={i} file={photo} onRemove={() => removePhoto(i)} />
-        ))}
+        {photoItems.map((item, i) =>
+          item.kind === "existing" ? (
+            <div key={item.path} className="relative h-20 w-20 shrink-0">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={item.url}
+                alt=""
+                className="h-full w-full rounded object-cover"
+              />
+              <input
+                type="hidden"
+                name="existingPhotoPaths"
+                value={item.path}
+              />
+              <button
+                type="button"
+                onClick={() => removePhotoItem(i)}
+                aria-label="사진 삭제"
+                className="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-white text-xs text-gray-600 shadow"
+              >
+                ✕
+              </button>
+            </div>
+          ) : (
+            <PhotoThumb
+              key={i}
+              file={item.file}
+              onRemove={() => removePhotoItem(i)}
+            />
+          )
+        )}
       </div>
 
       <div className="relative overflow-hidden rounded-lg border border-gray-300">
@@ -204,10 +289,18 @@ export function MemoryForm({
 
       <Button
         type="submit"
-        disabled={pending || (photos.length === 0 && comment.trim() === "")}
+        disabled={
+          pending || (photoItems.length === 0 && comment.trim() === "")
+        }
         className="w-full rounded-full bg-black px-3 py-3 text-white disabled:opacity-50"
       >
-        {pending ? "쌓는 중..." : "기록 남기기"}
+        {memory
+          ? pending
+            ? "수정 중..."
+            : "수정하기"
+          : pending
+            ? "쌓는 중..."
+            : "기록 남기기"}
       </Button>
     </form>
   );
