@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { MemoryForm } from "@/components/memory/MemoryForm";
+import { BackButton } from "@/components/ui/BackButton";
 
 export default async function EditMemoryPage({
   params,
@@ -29,17 +30,22 @@ export default async function EditMemoryPage({
   );
 
   return (
-    <MemoryForm
-      memory={{
-        id: memory.id,
-        placeId: memory.place_id,
-        photos: memory.photo_urls
-          .map((path: string) => ({ path, url: urlByPath.get(path) ?? "" }))
-          .filter((p: { url: string }) => p.url),
-        comment: memory.comment ?? "",
-        memoryDate: memory.memory_date.slice(0, 10),
-        companion: memory.companion,
-      }}
-    />
+    <div className="min-h-dvh bg-gray-50">
+      <div className="flex items-center border-b border-gray-200 bg-white px-6 py-4">
+        <BackButton fallbackHref={`/places/${memory.place_id}`} />
+      </div>
+      <MemoryForm
+        memory={{
+          id: memory.id,
+          placeId: memory.place_id,
+          photos: memory.photo_urls
+            .map((path: string) => ({ path, url: urlByPath.get(path) ?? "" }))
+            .filter((p: { url: string }) => p.url),
+          comment: memory.comment ?? "",
+          memoryDate: memory.memory_date.slice(0, 10),
+          companion: memory.companion,
+        }}
+      />
+    </div>
   );
 }
