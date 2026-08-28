@@ -1,9 +1,10 @@
 "use client";
 
 import { useActionState, useEffect, useMemo, useRef, useState } from "react";
-import type { ChangeEvent } from "react";
+import type { ChangeEvent, FormEvent } from "react";
 import { Button } from "@/components/ui/Button";
 import { createMemory, type MemoryActionState } from "@/app/places/actions";
+import { compressImage } from "@/lib/image/compressImage";
 
 const initialState: MemoryActionState = { error: null };
 
@@ -18,6 +19,9 @@ const COMPANION_TYPES = ["혼자", "가족", "연인", "친구"] as const;
 type CompanionType = (typeof COMPANION_TYPES)[number];
 
 const MAX_PHOTOS = 10;
+// next.config.ts의 serverActions.bodySizeLimit(20mb)보다 여유를 두고,
+// 서버까지 보내서 실패하기 전에 미리 걸러낸다.
+const MAX_TOTAL_PHOTO_SIZE = 19 * 1024 * 1024;
 
 export function MemoryForm({
   placeId,
@@ -49,16 +53,34 @@ export function MemoryForm({
     }
   }, [photos]);
 
-  const handlePickPhotos = (e: ChangeEvent<HTMLInputElement>) => {
+  const handlePickPhotos = async (e: ChangeEvent<HTMLInputElement>) => {
     const picked = Array.from(e.target.files ?? []);
-    if (picked.length > 0) {
-      setPhotos((prev) => [...prev, ...picked].slice(0, MAX_PHOTOS));
-    }
     e.target.value = "";
+    if (picked.length === 0) return;
+
+    const compressed = await Promise.all(
+      picked.map((file) => compressImage(file))
+    );
+    setPhotos((prev) => [...prev, ...compressed].slice(0, MAX_PHOTOS));
   };
 
   const removePhoto = (index: number) => {
     setPhotos((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const [sizeError, setSizeError] = useState<string | null>(null);
+
+  // 압축이 실패해서 원본이 그대로 남는 경우를 대비해, 서버에 보내기 전에
+  // 총 용량을 한 번 더 확인한다. 여기서 걸러야 "Body exceeded" 같은
+  // 알아보기 힘든 에러 대신 바로 이해할 수 있는 메시지를 보여줄 수 있다.
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    const totalSize = photos.reduce((sum, photo) => sum + photo.size, 0);
+    if (totalSize > MAX_TOTAL_PHOTO_SIZE) {
+      e.preventDefault();
+      setSizeError("사진 용량을 확인해주세요.");
+      return;
+    }
+    setSizeError(null);
   };
 
   const [comment, setComment] = useState("");
@@ -76,7 +98,7 @@ export function MemoryForm({
       : (companionType ?? "");
 
   return (
-    <form action={formAction} className="space-y-3 p-4">
+    <form action={formAction} onSubmit={handleSubmit} className="space-y-3 p-4">
       {placeId && <input type="hidden" name="placeId" value={placeId} />}
       {newPlace && (
         <>
@@ -176,7 +198,9 @@ export function MemoryForm({
       </div>
       <input type="hidden" name="companion" value={companionValue} />
 
-      {state.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {(sizeError || state.error) && (
+        <p className="text-sm text-red-600">{sizeError ?? state.error}</p>
+      )}
 
       <Button
         type="submit"
