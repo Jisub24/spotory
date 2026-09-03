@@ -169,10 +169,6 @@ export function MemoryForm({
         </>
       )}
 
-      {newPlace && (
-        <h1 className="text-lg font-semibold">{newPlace.name}</h1>
-      )}
-
       <p className="text-sm font-medium">사진 등록</p>
       <input
         ref={fileInputRef}
