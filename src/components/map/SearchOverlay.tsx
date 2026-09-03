@@ -141,6 +141,7 @@ export function SearchOverlay({ map }: { map: google.maps.Map }) {
 
       <ConfirmDialog
         open={pending !== null}
+        variant="sheet"
         title={
           pending && (
             <>
