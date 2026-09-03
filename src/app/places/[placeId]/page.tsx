@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { MemoryCardMenu } from "@/components/memory/MemoryCardMenu";
 import { formatCompanionParts } from "@/lib/format/companion";
 import { BackButton } from "@/components/ui/BackButton";
+import { PhotoGallery } from "@/components/memory/PhotoGallery";
 
 type MemoryRow = {
   id: string;
@@ -91,21 +92,13 @@ export default async function PlaceDetailPage({
                 <MemoryCardMenu memoryId={memory.id} />
               </div>
               {memory.photo_urls.length > 0 && (
-                <div className="mt-2 flex gap-2 overflow-x-auto">
-                  {memory.photo_urls.map((path) => {
-                    const url = urlByPath.get(path);
-                    if (!url) return null;
-                    return (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        key={path}
-                        src={url}
-                        alt=""
-                        className="h-28 w-28 shrink-0 rounded-lg object-cover"
-                      />
-                    );
-                  })}
-                </div>
+                <PhotoGallery
+                  photos={memory.photo_urls
+                    .map((path) => ({ path, url: urlByPath.get(path) }))
+                    .filter(
+                      (p): p is { path: string; url: string } => !!p.url
+                    )}
+                />
               )}
               {memory.comment && (
                 <p className="mt-4 text-base font-medium">{memory.comment}</p>
