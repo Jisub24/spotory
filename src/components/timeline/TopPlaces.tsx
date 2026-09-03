@@ -64,10 +64,23 @@ export function TopPlaces() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [topIdsKey]);
 
-  if (placesLoading || top.length === 0) return null;
+  if (placesLoading) {
+    return (
+      <div className="animate-pulse space-y-2">
+        <div className="h-4 w-28 rounded bg-gray-200" />
+        <div className="flex gap-3">
+          <div className="h-36 w-32 shrink-0 rounded-xl bg-gray-200" />
+          <div className="h-36 w-32 shrink-0 rounded-xl bg-gray-200" />
+          <div className="h-36 w-32 shrink-0 rounded-xl bg-gray-200" />
+        </div>
+      </div>
+    );
+  }
+
+  if (top.length === 0) return null;
 
   return (
-    <div className="space-y-2">
+    <div className="animate-page-enter space-y-2">
       <p className="text-sm font-medium">가장 많이 찾은 장소</p>
       <div className="flex gap-3 overflow-x-auto pb-1">
         {top.map((place) => {

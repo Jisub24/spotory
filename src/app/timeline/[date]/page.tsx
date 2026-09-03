@@ -53,8 +53,8 @@ export default async function DayMemoriesPage({
   const [y, m, d] = date.split("-").map(Number);
 
   return (
-    <div className="min-h-dvh bg-gray-50">
-      <div className="flex items-center gap-3 border-b border-gray-200 bg-white px-6 py-4">
+    <div className="min-h-dvh bg-gray-50 animate-page-enter">
+      <div className="flex items-center gap-3 bg-white px-6 py-4 shadow-sm">
         <BackButton fallbackHref="/timeline" />
         <h1 className="flex items-center gap-2 text-lg font-medium">
           {String(y).padStart(4, "0")}.{String(m).padStart(2, "0")}.

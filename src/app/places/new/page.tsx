@@ -1,4 +1,5 @@
 import { MemoryForm } from "@/components/memory/MemoryForm";
+import { BackButton } from "@/components/ui/BackButton";
 
 export default async function NewPlaceMemoryPage({
   searchParams,
@@ -19,8 +20,13 @@ export default async function NewPlaceMemoryPage({
   }
 
   return (
-    <MemoryForm
-      newPlace={{ name, lat: Number(lat), lng: Number(lng), googlePlaceId }}
-    />
+    <div className="min-h-dvh bg-gray-50 animate-page-enter">
+      <div className="flex items-center bg-white px-6 py-4 shadow-sm">
+        <BackButton fallbackHref="/map" />
+      </div>
+      <MemoryForm
+        newPlace={{ name, lat: Number(lat), lng: Number(lng), googlePlaceId }}
+      />
+    </div>
   );
 }

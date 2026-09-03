@@ -52,9 +52,24 @@ export function MonthCalendar({
           className="flex items-center gap-2 text-base font-semibold"
         >
           {year}년 {month}월
-          <span className="text-xl" style={{ color: MARK_COLOR }}>
-            ›
-          </span>
+          <svg
+            width="7"
+            height="12"
+            viewBox="0 0 7 12"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className={`transition-transform duration-200 ${
+              pickerOpen ? "rotate-90" : "rotate-0"
+            }`}
+          >
+            <path
+              d="M1 1L6 6L1 11"
+              stroke={MARK_COLOR}
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
         </button>
         <div className="flex items-center gap-6">
           <button

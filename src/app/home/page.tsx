@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { signOut } from "../login/actions";
+import { Logo } from "@/components/ui/Logo";
 
 export default function Home() {
   return (
     <div className="flex h-dvh flex-col bg-gray-50">
-      <div className="flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4">
-        <span className="text-lg font-semibold">Spotory</span>
+      <div className="flex items-center justify-between bg-white px-6 py-4 shadow-sm">
+        <Logo className="text-lg" />
         <form action={signOut}>
           <button
             type="submit"

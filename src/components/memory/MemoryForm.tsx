@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useMemo, useRef, useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { Button } from "@/components/ui/Button";
+import { Spinner } from "@/components/ui/Spinner";
 import {
   createMemory,
   updateMemory,
@@ -168,9 +169,9 @@ export function MemoryForm({
         </>
       )}
 
-      <h1 className="text-lg font-semibold">
-        {memory ? "기록 수정" : (newPlace?.name ?? "새 기록")}
-      </h1>
+      {newPlace && (
+        <h1 className="text-lg font-semibold">{newPlace.name}</h1>
+      )}
 
       <p className="text-sm font-medium">사진 등록</p>
       <input
@@ -292,15 +293,16 @@ export function MemoryForm({
         disabled={
           pending || (photoItems.length === 0 && comment.trim() === "")
         }
-        className="w-full rounded-full bg-primary px-3 py-3 text-black disabled:opacity-50"
+        className="flex w-full items-center justify-center gap-2 rounded-full bg-primary px-3 py-3 text-black disabled:opacity-50"
       >
+        {pending && <Spinner />}
         {memory
           ? pending
-            ? "수정 중..."
+            ? "수정 중"
             : "수정하기"
           : pending
             ? "쌓는 중"
-            : "기록 남기기"}
+            : "이야기 쌓기"}
       </Button>
     </form>
   );

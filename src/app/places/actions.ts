@@ -1,6 +1,6 @@
 "use server";
 
-import { redirect } from "next/navigation";
+import { redirect, RedirectType } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 
@@ -90,7 +90,7 @@ export async function createMemory(
   }
 
   revalidatePath("/home");
-  redirect(`/places/${placeId}`);
+  redirect(`/places/${placeId}`, RedirectType.replace);
 }
 
 export async function updateMemory(
@@ -163,7 +163,7 @@ export async function updateMemory(
   }
 
   revalidatePath(`/places/${placeId}`);
-  redirect(`/places/${placeId}`);
+  redirect(`/places/${placeId}`, RedirectType.replace);
 }
 
 export async function deleteMemory(memoryId: string) {
