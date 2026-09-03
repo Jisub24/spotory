@@ -34,9 +34,11 @@ export async function proxy(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const isPublicPath = PUBLIC_PATHS.some((path) =>
-    request.nextUrl.pathname.startsWith(path)
-  );
+  // "/"는 로그인 여부와 무관하게 항상 보여주는 시작 화면이라, "/"로 시작하는
+  // 모든 경로가 아니라 정확히 "/"인 경우만 공개 경로로 취급한다.
+  const isPublicPath =
+    request.nextUrl.pathname === "/" ||
+    PUBLIC_PATHS.some((path) => request.nextUrl.pathname.startsWith(path));
 
   if (!user && !isPublicPath) {
     return NextResponse.redirect(new URL("/login", request.url));

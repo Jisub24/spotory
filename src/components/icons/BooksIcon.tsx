@@ -1,3 +1,5 @@
+import { MARK_COLOR } from "@/lib/theme";
+
 function darken(hex: string, amount: number): string {
   const num = parseInt(hex.replace("#", ""), 16);
   const r = Math.max(0, (num >> 16) - Math.round((num >> 16) * amount));
@@ -70,7 +72,7 @@ function Book({
 
 export function BooksIcon({
   size = 20,
-  color = "#5EEAD4",
+  color = MARK_COLOR,
 }: {
   size?: number;
   color?: string;

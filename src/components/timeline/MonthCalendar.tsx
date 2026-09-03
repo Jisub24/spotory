@@ -2,10 +2,9 @@
 
 import { useState } from "react";
 import { YearMonthPicker } from "./YearMonthPicker";
+import { MARK_COLOR } from "@/lib/theme";
 
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
-// 지도 마커와 동일한 민트색으로, 기록이 있는 날짜라는 걸 같은 색 언어로 표시한다.
-const MARK_COLOR = "#5EEAD4";
 
 export function MonthCalendar({
   year,

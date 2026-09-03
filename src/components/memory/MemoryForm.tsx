@@ -263,7 +263,7 @@ export function MemoryForm({
               }
               className={`rounded-full border px-4 py-2 text-sm ${
                 companionType === type
-                  ? "border-black bg-black text-white"
+                  ? "border-primary bg-primary text-black"
                   : "border-gray-300 text-gray-700"
               }`}
             >
@@ -292,14 +292,14 @@ export function MemoryForm({
         disabled={
           pending || (photoItems.length === 0 && comment.trim() === "")
         }
-        className="w-full rounded-full bg-black px-3 py-3 text-white disabled:opacity-50"
+        className="w-full rounded-full bg-primary px-3 py-3 text-black disabled:opacity-50"
       >
         {memory
           ? pending
             ? "수정 중..."
             : "수정하기"
           : pending
-            ? "쌓는 중..."
+            ? "쌓는 중"
             : "기록 남기기"}
       </Button>
     </form>

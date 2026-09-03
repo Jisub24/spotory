@@ -4,9 +4,8 @@ import { MemoryCardMenu } from "@/components/memory/MemoryCardMenu";
 import { formatCompanionParts } from "@/lib/format/companion";
 import { BackButton } from "@/components/ui/BackButton";
 import { BooksIcon } from "@/components/icons/BooksIcon";
-
-// 지도 마커와 동일한 민트색으로, 장소를 나타내는 글씨라는 걸 같은 색 언어로 표시한다.
-const PLACE_COLOR = "#5EEAD4";
+import { MARK_COLOR } from "@/lib/theme";
+import { PhotoImage } from "@/components/memory/PhotoImage";
 
 type MemoryRow = {
   id: string;
@@ -70,12 +69,12 @@ export default async function DayMemoriesPage({
           return (
             <div
               key={memory.id}
-              className="rounded-xl border border-gray-200 bg-white p-4"
+              className="rounded-xl border border-primary bg-white p-4"
             >
               <div className="flex items-center justify-between">
                 <span
                   className="text-base font-semibold"
-                  style={{ color: PLACE_COLOR }}
+                  style={{ color: MARK_COLOR }}
                 >
                   {memory.places?.name}
                 </span>
@@ -95,19 +94,13 @@ export default async function DayMemoriesPage({
                     const url = urlByPath.get(path);
                     if (!url) return null;
                     return (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        key={path}
-                        src={url}
-                        alt=""
-                        className="h-28 w-28 shrink-0 rounded-lg object-cover"
-                      />
+                      <PhotoImage key={path} src={url} className="h-28 w-28" />
                     );
                   })}
                 </div>
               )}
               {memory.comment && (
-                <p className="mt-5 text-base font-medium">{memory.comment}</p>
+                <p className="mt-7 text-sm font-medium">{memory.comment}</p>
               )}
             </div>
           );

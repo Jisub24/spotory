@@ -89,7 +89,7 @@ export async function createMemory(
     return { error: "기록을 저장하지 못했습니다." };
   }
 
-  revalidatePath("/");
+  revalidatePath("/home");
   redirect(`/places/${placeId}`);
 }
 

@@ -1,11 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { MonthCalendar } from "@/components/timeline/MonthCalendar";
 import { TopPlaces } from "@/components/timeline/TopPlaces";
+import { BackButton } from "@/components/ui/BackButton";
 
 export default function TimelinePage() {
   const router = useRouter();
@@ -48,9 +48,7 @@ export default function TimelinePage() {
   return (
     <div className="min-h-dvh bg-gray-50">
       <div className="flex items-center gap-3 border-b border-gray-200 bg-white px-6 py-4">
-        <Link href="/" className="-m-2 p-2 text-gray-500">
-          ←
-        </Link>
+        <BackButton fallbackHref="/home" />
         <h1 className="text-lg font-semibold">나의 기록</h1>
       </div>
 
