@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { createPortal } from "react-dom";
 
 export function ConfirmDialog({
@@ -12,7 +13,7 @@ export function ConfirmDialog({
   onCancel,
 }: {
   open: boolean;
-  title: string;
+  title: ReactNode;
   confirmText?: string;
   cancelText?: string;
   danger?: boolean;
