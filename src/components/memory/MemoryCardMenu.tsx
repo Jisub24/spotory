@@ -3,14 +3,20 @@
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import { deleteMemory } from "@/app/places/actions";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 
 export function MemoryCardMenu({ memoryId }: { memoryId: string }) {
   const [open, setOpen] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   const handleDelete = () => {
     setOpen(false);
-    if (!confirm("기록을 지우시겠습니까?")) return;
+    setConfirmOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    setConfirmOpen(false);
     startTransition(() => {
       deleteMemory(memoryId);
     });
@@ -47,6 +53,15 @@ export function MemoryCardMenu({ memoryId }: { memoryId: string }) {
           </div>
         </>
       )}
+
+      <ConfirmDialog
+        open={confirmOpen}
+        title="기록을 삭제하시겠습니까?"
+        confirmText="삭제"
+        danger
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setConfirmOpen(false)}
+      />
     </div>
   );
 }

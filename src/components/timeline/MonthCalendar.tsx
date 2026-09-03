@@ -2,10 +2,9 @@
 
 import { useState } from "react";
 import { YearMonthPicker } from "./YearMonthPicker";
+import { MARK_COLOR } from "@/lib/theme";
 
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
-// 지도 마커와 동일한 민트색으로, 기록이 있는 날짜라는 걸 같은 색 언어로 표시한다.
-const MARK_COLOR = "#5EEAD4";
 
 export function MonthCalendar({
   year,
@@ -53,9 +52,24 @@ export function MonthCalendar({
           className="flex items-center gap-2 text-base font-semibold"
         >
           {year}년 {month}월
-          <span className="text-xl" style={{ color: MARK_COLOR }}>
-            ›
-          </span>
+          <svg
+            width="7"
+            height="12"
+            viewBox="0 0 7 12"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className={`transition-transform duration-200 ${
+              pickerOpen ? "rotate-90" : "rotate-0"
+            }`}
+          >
+            <path
+              d="M1 1L6 6L1 11"
+              stroke={MARK_COLOR}
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
         </button>
         <div className="flex items-center gap-6">
           <button

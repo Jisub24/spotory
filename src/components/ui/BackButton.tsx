@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { MARK_COLOR } from "@/lib/theme";
 
 export function BackButton({ fallbackHref }: { fallbackHref: string }) {
   const router = useRouter();
@@ -13,9 +14,25 @@ export function BackButton({ fallbackHref }: { fallbackHref: string }) {
         if (window.history.length > 1) router.back();
         else router.push(fallbackHref);
       }}
-      className="-m-2 p-2 text-gray-500"
+      className="-m-2 flex h-9 w-9 items-center justify-center p-2"
     >
-      ←
+      {/* 글자(폰트) 대신 도형으로 그려서, 폰트마다 다른 글자 높이 기준선 때문에
+          제목 글씨와 위/아래가 어긋나는 걸 막는다. */}
+      <svg
+        width="10"
+        height="18"
+        viewBox="0 0 10 18"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M9 1L1 9L9 17"
+          stroke={MARK_COLOR}
+          strokeWidth="2.2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
     </button>
   );
 }

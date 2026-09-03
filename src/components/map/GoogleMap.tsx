@@ -54,6 +54,7 @@ export function GoogleMap({
           zoomControl: false,
           cameraControl: false,
           streetViewControl: false,
+          fullscreenControl: false,
           // Cloud 스타일이 도착하기 전까지 빈 타일 자리에 기본 회색 대신
           // 우리 테마색이 먼저 보이게 해서, 스타일 전환 시 화면이 덜 튀어 보이게 한다.
           backgroundColor: "#F0FBF7",

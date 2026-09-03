@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { MARK_COLOR } from "@/lib/theme";
 
 const ITEM_HEIGHT = 40;
 const VISIBLE_COUNT = 5; // 홀수여야 가운데 줄이 명확하게 생긴다.
 const PADDING = (ITEM_HEIGHT * (VISIBLE_COUNT - 1)) / 2;
-const MARK_COLOR = "#5EEAD4";
 
 function WheelColumn({
   values,
@@ -113,7 +113,7 @@ export function YearMonthPicker({
           <button
             type="button"
             onClick={() => onSelect(years[yearIndex], months[monthIndex])}
-            className="w-full rounded-full bg-black px-3 py-3 text-white"
+            className="w-full rounded-full bg-primary px-3 py-3 text-black"
           >
             확인
           </button>

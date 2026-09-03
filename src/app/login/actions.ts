@@ -26,8 +26,8 @@ export async function signIn(
     return { error: translateAuthError(error), message: null };
   }
 
-  revalidatePath("/", "layout");
-  redirect("/");
+  revalidatePath("/home", "layout");
+  redirect("/home");
 }
 
 export async function signUp(

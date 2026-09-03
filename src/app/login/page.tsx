@@ -2,6 +2,7 @@
 
 import { useActionState, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/Button";
+import { Spinner } from "@/components/ui/Spinner";
 import { signIn, signUp, type AuthActionState } from "./actions";
 
 const initialState: AuthActionState = { error: null, message: null };
@@ -77,13 +78,13 @@ function AuthForm({ mode }: { mode: "signIn" | "signUp" }) {
           type="email"
           name="email"
           placeholder="이메일"
-          className="w-full rounded border px-3 py-3"
+          className="w-full rounded border border-border-dark px-3 py-3"
         />
         <input
           type="password"
           name="password"
           placeholder="비밀번호"
-          className="w-full rounded border px-3 py-3"
+          className="w-full rounded border border-border-dark px-3 py-3"
         />
 
         {errorToShow && <p className="text-sm text-red-600">{errorToShow}</p>}
@@ -94,9 +95,16 @@ function AuthForm({ mode }: { mode: "signIn" | "signUp" }) {
         <Button
           type="submit"
           disabled={pending}
-          className="w-full rounded bg-black px-3 py-3 text-white disabled:opacity-50"
+          className="flex w-full items-center justify-center gap-2 rounded bg-primary px-3 py-3 text-black disabled:opacity-50"
         >
-          {mode === "signIn" ? "로그인" : "회원가입"}
+          {pending && <Spinner />}
+          {mode === "signIn"
+            ? pending
+              ? "로그인 중"
+              : "로그인"
+            : pending
+              ? "가입 중"
+              : "회원가입"}
         </Button>
       </form>
     </>

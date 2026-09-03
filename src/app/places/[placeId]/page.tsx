@@ -53,15 +53,31 @@ export default async function PlaceDetailPage({
   );
 
   return (
-    <div className="min-h-dvh bg-gray-50">
-      <div className="flex items-center gap-3 border-b border-gray-200 bg-white px-6 py-4">
+    <div className="min-h-dvh bg-gray-50 animate-page-enter">
+      <div className="flex items-center gap-3 bg-white px-6 py-4 shadow-sm">
         <BackButton fallbackHref="/map" />
-        <h1 className="flex-1 text-lg font-semibold">{place.name}</h1>
+        <h1 className="flex-1 text-lg font-semibold">
+          <Link href="/map">{place.name}</Link>
+        </h1>
         <Link
           href={`/places/${placeId}/new`}
-          className="-m-2 p-2 text-sm text-gray-500 underline"
+          aria-label="이야기 쌓기"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary"
         >
-          이야기 쌓기
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M8 1.5V14.5M1.5 8H14.5"
+              stroke="white"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+            />
+          </svg>
         </Link>
       </div>
 
@@ -74,7 +90,7 @@ export default async function PlaceDetailPage({
           return (
             <div
               key={memory.id}
-              className="rounded-xl border border-gray-200 bg-white p-4"
+              className="rounded-xl border border-primary bg-white p-4"
             >
               <div className="flex items-center justify-between text-sm text-gray-500">
                 <span>
@@ -101,7 +117,7 @@ export default async function PlaceDetailPage({
                 />
               )}
               {memory.comment && (
-                <p className="mt-4 text-base font-medium">{memory.comment}</p>
+                <p className="mt-6 text-sm font-medium">{memory.comment}</p>
               )}
             </div>
           );

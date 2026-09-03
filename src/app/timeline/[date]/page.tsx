@@ -4,10 +4,8 @@ import { MemoryCardMenu } from "@/components/memory/MemoryCardMenu";
 import { formatCompanionParts } from "@/lib/format/companion";
 import { BackButton } from "@/components/ui/BackButton";
 import { BooksIcon } from "@/components/icons/BooksIcon";
+import { MARK_COLOR } from "@/lib/theme";
 import { PhotoGallery } from "@/components/memory/PhotoGallery";
-
-// 지도 마커와 동일한 민트색으로, 장소를 나타내는 글씨라는 걸 같은 색 언어로 표시한다.
-const PLACE_COLOR = "#5EEAD4";
 
 type MemoryRow = {
   id: string;
@@ -55,8 +53,8 @@ export default async function DayMemoriesPage({
   const [y, m, d] = date.split("-").map(Number);
 
   return (
-    <div className="min-h-dvh bg-gray-50">
-      <div className="flex items-center gap-3 border-b border-gray-200 bg-white px-6 py-4">
+    <div className="min-h-dvh bg-gray-50 animate-page-enter">
+      <div className="flex items-center gap-3 bg-white px-6 py-4 shadow-sm">
         <BackButton fallbackHref="/timeline" />
         <h1 className="flex items-center gap-2 text-lg font-medium">
           {String(y).padStart(4, "0")}.{String(m).padStart(2, "0")}.
@@ -71,12 +69,12 @@ export default async function DayMemoriesPage({
           return (
             <div
               key={memory.id}
-              className="rounded-xl border border-gray-200 bg-white p-4"
+              className="rounded-xl border border-primary bg-white p-4"
             >
               <div className="flex items-center justify-between">
                 <span
                   className="text-base font-semibold"
-                  style={{ color: PLACE_COLOR }}
+                  style={{ color: MARK_COLOR }}
                 >
                   {memory.places?.name}
                 </span>
@@ -101,7 +99,7 @@ export default async function DayMemoriesPage({
                 />
               )}
               {memory.comment && (
-                <p className="mt-5 text-base font-medium">{memory.comment}</p>
+                <p className="mt-7 text-sm font-medium">{memory.comment}</p>
               )}
             </div>
           );
