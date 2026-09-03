@@ -4,6 +4,7 @@ import { MemoryCardMenu } from "@/components/memory/MemoryCardMenu";
 import { formatCompanionParts } from "@/lib/format/companion";
 import { BackButton } from "@/components/ui/BackButton";
 import { BooksIcon } from "@/components/icons/BooksIcon";
+import { PhotoGallery } from "@/components/memory/PhotoGallery";
 
 // 지도 마커와 동일한 민트색으로, 장소를 나타내는 글씨라는 걸 같은 색 언어로 표시한다.
 const PLACE_COLOR = "#5EEAD4";
@@ -90,21 +91,14 @@ export default async function DayMemoriesPage({
                 </p>
               )}
               {memory.photo_urls.length > 0 && (
-                <div className="mt-4 flex gap-2 overflow-x-auto">
-                  {memory.photo_urls.map((path) => {
-                    const url = urlByPath.get(path);
-                    if (!url) return null;
-                    return (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        key={path}
-                        src={url}
-                        alt=""
-                        className="h-28 w-28 shrink-0 rounded-lg object-cover"
-                      />
-                    );
-                  })}
-                </div>
+                <PhotoGallery
+                  className="mt-4 flex gap-2 overflow-x-auto"
+                  photos={memory.photo_urls
+                    .map((path) => ({ path, url: urlByPath.get(path) }))
+                    .filter(
+                      (p): p is { path: string; url: string } => !!p.url
+                    )}
+                />
               )}
               {memory.comment && (
                 <p className="mt-5 text-base font-medium">{memory.comment}</p>
