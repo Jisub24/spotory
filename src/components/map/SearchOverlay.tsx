@@ -67,6 +67,10 @@ export function SearchOverlay({ map }: { map: google.maps.Map }) {
 
       if (!place.location) return;
 
+      // 엔터 없이 목록에서 바로 탭해서 선택하면 모바일 키보드가 안 닫혀서
+      // 하단 확인창을 가리는 문제가 있어, 선택 즉시 포커스를 강제로 뺀다.
+      (document.activeElement as HTMLElement | null)?.blur();
+
       const location = {
         lat: place.location.lat(),
         lng: place.location.lng(),
