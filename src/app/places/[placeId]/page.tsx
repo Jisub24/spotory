@@ -5,6 +5,9 @@ import { MemoryCardMenu } from "@/components/memory/MemoryCardMenu";
 import { formatCompanionParts } from "@/lib/format/companion";
 import { BackButton } from "@/components/ui/BackButton";
 import { PhotoGallery } from "@/components/memory/PhotoGallery";
+import { AiSummary } from "@/components/memory/AiSummary";
+
+const MIN_MEMORIES_FOR_SUMMARY = 3;
 
 type MemoryRow = {
   id: string;
@@ -24,7 +27,9 @@ export default async function PlaceDetailPage({
 
   const { data: place } = await supabase
     .from("places")
-    .select("id, name")
+    .select(
+      "id, name, ai_summary, ai_summary_generated_at, ai_summary_memory_count"
+    )
     .eq("id", placeId)
     .maybeSingle();
 
@@ -82,6 +87,28 @@ export default async function PlaceDetailPage({
       </div>
 
       <div className="space-y-4 p-4">
+        {memories.length >= MIN_MEMORIES_FOR_SUMMARY ? (
+          <AiSummary
+            placeId={placeId}
+            placeName={place.name}
+            initialSummary={place.ai_summary}
+            needsRefresh={
+              !place.ai_summary ||
+              // 기록이 삭제된 경우엔(요약이 이미 없는 기록을 언급하고 있을 수 있으니)
+              // 하나만 줄어도 바로 갱신한다. 늘어나는 경우엔 비용을 아끼려고
+              // 2개 이상 쌓였을 때만 갱신한다.
+              memories.length < place.ai_summary_memory_count ||
+              memories.length - place.ai_summary_memory_count >= 2
+            }
+          />
+        ) : (
+          memories.length > 0 && (
+            <p className="rounded-xl border border-dashed border-gray-300 bg-white p-4 text-center text-sm text-gray-500">
+              이야기가 3개 이상 쌓이면 이 장소의 이야기를 만들어드려요
+            </p>
+          )
+        )}
+
         {memories.length === 0 && (
           <p className="text-sm text-gray-500">아직 남긴 기록이 없어요.</p>
         )}

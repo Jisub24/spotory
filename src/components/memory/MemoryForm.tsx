@@ -82,6 +82,9 @@ export function MemoryForm({
 
   // 실제 제출에 쓰이는 input은 숨겨두고, 새로 고른 파일들만 DataTransfer로
   // 그 input의 FileList에 채운다. 기존 사진은 다시 업로드하지 않는다.
+  // state도 의존성에 넣은 이유: 제출이 실패해도 브라우저가 파일 input의
+  // FileList를 비워버리는 경우가 있어서, 재시도할 때 사진이 빠지는 버그가 있었다.
+  // 제출 시도(성공/실패 모두)가 끝날 때마다 다시 채워 넣어서 이를 막는다.
   useEffect(() => {
     const dataTransfer = new DataTransfer();
     photoItems.forEach((item) => {
@@ -90,7 +93,7 @@ export function MemoryForm({
     if (fileInputRef.current) {
       fileInputRef.current.files = dataTransfer.files;
     }
-  }, [photoItems]);
+  }, [photoItems, state]);
 
   const handlePickPhotos = async (e: ChangeEvent<HTMLInputElement>) => {
     const picked = Array.from(e.target.files ?? []);
