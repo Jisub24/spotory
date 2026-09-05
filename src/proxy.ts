@@ -44,9 +44,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // 이미 로그인한 사용자가 "/"로 오면, 클라이언트 자바스크립트가 실행되길
-  // 기다리지 않고 서버에서 바로 홈으로 보낸다. (브라우저가 비활성 탭의 JS
-  // 실행을 늦추면 클라이언트 쪽 리다이렉트가 무한정 안 일어나는 문제가 있었음)
+  // 로그인 상태에서 "/"로 오면 클라이언트 JS를 기다리지 않고 서버에서 바로 보낸다.
   if (user && request.nextUrl.pathname === "/") {
     return NextResponse.redirect(new URL("/home", request.url));
   }

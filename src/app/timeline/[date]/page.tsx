@@ -4,6 +4,7 @@ import { MemoryCardMenu } from "@/components/memory/MemoryCardMenu";
 import { formatCompanionParts } from "@/lib/format/companion";
 import { BackButton } from "@/components/ui/BackButton";
 import { BooksIcon } from "@/components/icons/BooksIcon";
+import { PinIcon } from "@/components/icons/PinIcon";
 import { MARK_COLOR } from "@/lib/theme";
 import { PhotoGallery } from "@/components/memory/PhotoGallery";
 
@@ -76,21 +77,7 @@ export default async function DayMemoriesPage({
                   className="inline-flex items-center gap-1 text-base font-semibold"
                   style={{ color: MARK_COLOR }}
                 >
-                  <svg
-                    aria-hidden
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="shrink-0"
-                  >
-                    <path d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
-                  </svg>
+                  <PinIcon size={14} className="shrink-0" />
                   {memory.places?.name}
                 </span>
                 <MemoryCardMenu memoryId={memory.id} />

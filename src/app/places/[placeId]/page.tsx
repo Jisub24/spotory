@@ -102,9 +102,7 @@ export default async function PlaceDetailPage({
             initialSummary={place.ai_summary}
             needsRefresh={
               !place.ai_summary ||
-              // 기록이 삭제된 경우엔(요약이 이미 없는 기록을 언급하고 있을 수 있으니)
-              // 하나만 줄어도 바로 갱신한다. 늘어나는 경우엔 비용을 아끼려고
-              // 2개 이상 쌓였을 때만 갱신한다.
+              // 기록이 줄면 바로 갱신하고, 늘어날 땐 비용 절약을 위해 2개 이상 쌓일 때만.
               memories.length < place.ai_summary_memory_count ||
               memories.length - place.ai_summary_memory_count >= 2
             }
