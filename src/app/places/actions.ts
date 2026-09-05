@@ -1,11 +1,12 @@
 "use server";
 
-import { redirect, RedirectType } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 
 export type MemoryActionState = {
   error: string | null;
+  success?: boolean;
+  placeId?: string;
 };
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
@@ -114,7 +115,8 @@ export async function createMemory(
   }
 
   revalidatePath("/home");
-  redirect(`/places/${placeId}`, RedirectType.replace);
+  revalidatePath(`/places/${placeId}`);
+  return { error: null, success: true, placeId: placeId ?? undefined };
 }
 
 export async function updateMemory(
@@ -192,16 +194,18 @@ export async function updateMemory(
   }
 
   revalidatePath(`/places/${placeId}`);
-  redirect(`/places/${placeId}`, RedirectType.replace);
+  return { error: null, success: true };
 }
 
-export async function deleteMemory(memoryId: string) {
+export async function deleteMemory(
+  memoryId: string
+): Promise<{ placeDeleted: boolean }> {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) return;
+  if (!user) return { placeDeleted: false };
 
   const { data: memory } = await supabase
     .from("memories")
@@ -209,7 +213,7 @@ export async function deleteMemory(memoryId: string) {
     .eq("id", memoryId)
     .single();
 
-  if (!memory) return;
+  if (!memory) return { placeDeleted: false };
 
   if (memory.photo_urls.length > 0) {
     await supabase.storage.from("memory-photos").remove(memory.photo_urls);
@@ -217,5 +221,17 @@ export async function deleteMemory(memoryId: string) {
 
   await supabase.from("memories").delete().eq("id", memoryId);
 
+  const { count } = await supabase
+    .from("memories")
+    .select("id", { count: "exact", head: true })
+    .eq("place_id", memory.place_id);
+
+  if (!count) {
+    await supabase.from("places").delete().eq("id", memory.place_id);
+    revalidatePath("/map");
+    return { placeDeleted: true };
+  }
+
   revalidatePath(`/places/${memory.place_id}`);
+  return { placeDeleted: false };
 }

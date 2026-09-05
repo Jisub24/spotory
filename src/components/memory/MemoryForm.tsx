@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useMemo, useRef, useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
 import {
@@ -64,10 +65,20 @@ export function MemoryForm({
   newPlace?: NewPlaceInfo;
   memory?: ExistingMemory;
 }) {
+  const router = useRouter();
   const [state, formAction, pending] = useActionState(
     memory ? updateMemory : createMemory,
     initialState
   );
+
+  useEffect(() => {
+    if (!state.success) return;
+    if (newPlace && state.placeId) {
+      router.replace(`/places/${state.placeId}`);
+    } else {
+      router.back();
+    }
+  }, [state, router, newPlace]);
   // 날짜 입력의 기본값을 오늘로 미리 채워서, 매번 날짜를 직접 고르지 않아도 되게 한다.
   const today = new Date().toISOString().slice(0, 10);
   // 네이티브 date input의 표시 형식은 기기 로캘을 따라가서 우리 마음대로 못 바꾸기 때문에,
