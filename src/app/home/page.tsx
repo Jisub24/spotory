@@ -4,8 +4,8 @@ import { Logo } from "@/components/ui/Logo";
 
 export default function Home() {
   return (
-    <div className="flex h-dvh flex-col bg-gray-50">
-      <div className="flex items-center justify-between bg-white px-6 py-4 shadow-sm">
+    <div className="flex h-dvh flex-col bg-page">
+      <div className="flex items-center justify-between bg-white px-6 py-4">
         <Logo className="text-lg" />
         <form action={signOut}>
           <button

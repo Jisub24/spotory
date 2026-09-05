@@ -10,12 +10,16 @@ import { Logo } from "@/components/ui/Logo";
 
 export default function MapPage() {
   const [map, setMap] = useState<google.maps.Map | null>(null);
-  const { places, loading: placesLoading } = usePlaces();
+  const {
+    places,
+    loading: placesLoading,
+    error: placesError,
+  } = usePlaces();
   const { center, loading: centerLoading } = useLastMemoryPlace();
 
   return (
-    <div className="flex h-dvh flex-col bg-gray-50">
-      <div className="flex items-center bg-white px-6 py-4 shadow-sm">
+    <div className="flex h-dvh flex-col bg-page">
+      <div className="flex items-center bg-white px-6 py-4">
         <Link href="/home" className="-m-2 p-2">
           <Logo className="text-lg" />
         </Link>
@@ -35,7 +39,7 @@ export default function MapPage() {
             </div>
           )}
         </div>
-        {!placesLoading && places.length === 0 && (
+        {!placesLoading && !placesError && places.length === 0 && (
           // 기록을 처음 남기는 사용자에게만 해당 문구 보이게 함
           <div className="pointer-events-none absolute inset-x-4 top-8 flex justify-center">
             <p className="rounded-full border border-primary bg-white px-4 py-2 text-sm text-gray-600 shadow-sm">

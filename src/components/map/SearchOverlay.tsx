@@ -139,7 +139,7 @@ export function SearchOverlay({ map }: { map: google.maps.Map }) {
 
   return (
     <>
-      <div className="ml-4 min-w-0 max-w-xl flex-1 rounded-2xl border border-gray-300 px-2 py-1">
+      <div className="ml-4 min-w-0 max-w-xl flex-1 rounded-xl border border-gray-300 px-2 py-0.5">
         <div ref={containerRef} />
       </div>
 

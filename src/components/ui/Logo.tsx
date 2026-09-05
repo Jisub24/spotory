@@ -1,5 +1,6 @@
 import { Fredoka } from "next/font/google";
-import { MARK_COLOR } from "@/lib/theme";
+
+const PIN_COLOR = "#A7B5D8";
 
 // "Spotory"의 o 하나를 지도 마커 핀 모양으로 바꾼 워드마크 로고.
 const fredoka = Fredoka({ subsets: ["latin"], weight: ["600"] });
@@ -18,7 +19,7 @@ export function Logo({ className = "text-3xl" }: { className?: string }) {
       >
         <path
           d="M12 1C6.477 1 2 5.477 2 11c0 7.5 10 20 10 20s10-12.5 10-20c0-5.523-4.477-10-10-10z"
-          fill={MARK_COLOR}
+          fill={PIN_COLOR}
         />
         <circle cx="12" cy="11" r="4.5" fill="white" />
       </svg>
