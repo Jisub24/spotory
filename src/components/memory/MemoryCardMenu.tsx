@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { deleteMemory } from "@/app/places/actions";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 
 export function MemoryCardMenu({ memoryId }: { memoryId: string }) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -17,8 +19,11 @@ export function MemoryCardMenu({ memoryId }: { memoryId: string }) {
 
   const handleConfirmDelete = () => {
     setConfirmOpen(false);
-    startTransition(() => {
-      deleteMemory(memoryId);
+    startTransition(async () => {
+      const { placeDeleted } = await deleteMemory(memoryId);
+      if (placeDeleted) {
+        router.push("/map");
+      }
     });
   };
 

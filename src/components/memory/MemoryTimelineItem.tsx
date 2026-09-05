@@ -9,6 +9,7 @@ export function MemoryTimelineItem({
   memory,
   ordinal,
   photos,
+  defaultOpen = false,
 }: {
   memory: {
     id: string;
@@ -19,8 +20,9 @@ export function MemoryTimelineItem({
   };
   ordinal: number;
   photos: { path: string; url: string }[];
+  defaultOpen?: boolean;
 }) {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(defaultOpen);
   const companionParts = formatCompanionParts(memory.companion);
 
   return (
@@ -29,11 +31,30 @@ export function MemoryTimelineItem({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className={`mb-1.5 font-medium text-gray-700 ${
+        className={`mb-1.5 inline-flex items-center gap-1.5 font-medium text-gray-700 ${
           open ? "text-sm" : "text-base"
         }`}
       >
         {ordinal}번째 기록
+        <svg
+          aria-hidden
+          width="5"
+          height="9"
+          viewBox="0 0 7 12"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className={`shrink-0 transition-transform duration-200 ${
+            open ? "rotate-90" : "rotate-0"
+          }`}
+        >
+          <path
+            d="M1 1L6 6L1 11"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
       </button>
       {open && (
         <div className="rounded-xl bg-card p-4 shadow-[4px_4px_10px_rgba(0,0,0,0.15)]">
