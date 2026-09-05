@@ -91,11 +91,8 @@ export function MemoryForm({
   );
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // 실제 제출에 쓰이는 input은 숨겨두고, 새로 고른 파일들만 DataTransfer로
-  // 그 input의 FileList에 채운다. 기존 사진은 다시 업로드하지 않는다.
-  // state도 의존성에 넣은 이유: 제출이 실패해도 브라우저가 파일 input의
-  // FileList를 비워버리는 경우가 있어서, 재시도할 때 사진이 빠지는 버그가 있었다.
-  // 제출 시도(성공/실패 모두)가 끝날 때마다 다시 채워 넣어서 이를 막는다.
+  // 숨긴 input에는 새로 고른 파일만 채운다(기존 사진은 재업로드 안 함).
+  // 제출 후 브라우저가 FileList를 비우는 경우가 있어 state 변경마다 다시 채운다.
   useEffect(() => {
     const dataTransfer = new DataTransfer();
     photoItems.forEach((item) => {
@@ -128,9 +125,7 @@ export function MemoryForm({
 
   const [sizeError, setSizeError] = useState<string | null>(null);
 
-  // 압축이 실패해서 원본이 그대로 남는 경우를 대비해, 서버에 보내기 전에
-  // 새로 추가한 사진들의 총 용량을 한 번 더 확인한다. 여기서 걸러야
-  // "Body exceeded" 같은 알아보기 힘든 에러 대신 바로 이해할 수 있는 메시지를 보여줄 수 있다.
+  // 압축 실패로 원본이 그대로 남는 경우를 대비해 전송 전 총 용량을 한 번 더 확인.
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     const totalSize = photoItems.reduce(
       (sum, item) => (item.kind === "new" ? sum + item.file.size : sum),

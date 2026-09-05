@@ -11,25 +11,27 @@ export type MemoryActionState = {
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
-// 모바일 네트워크에서 업로드가 순간적으로 끊기는 경우가 있어, 실패하면 한 번 더 시도한다.
-// 실패 원인을 서버 로그에 남겨서 계속 실패할 때 원인을 알 수 있게 한다.
+// 원본 파일명(한글 등)을 그대로 쓰면 Supabase Storage가 "Invalid key"로 거부할 수 있어
+// UUID만 쓴다. 모바일 네트워크 순단에 대비해 실패 시 한 번 더 시도한다.
 async function uploadPhoto(
   supabase: SupabaseServerClient,
-  path: string,
+  userId: string,
   photo: File
-): Promise<boolean> {
+): Promise<string | null> {
+  const path = `${userId}/${crypto.randomUUID()}.jpg`;
+
   for (let attempt = 1; attempt <= 2; attempt++) {
     const { error } = await supabase.storage
       .from("memory-photos")
       .upload(path, photo);
-    if (!error) return true;
+    if (!error) return path;
 
     console.error(`사진 업로드 실패 (시도 ${attempt}/2):`, error);
     if (attempt === 1) {
       await new Promise((resolve) => setTimeout(resolve, 1000));
     }
   }
-  return false;
+  return null;
 }
 
 export async function createMemory(
@@ -86,13 +88,8 @@ export async function createMemory(
 
   const photoPaths: string[] = [];
   for (const photo of photos) {
-    // 원본 파일명(한글 등)을 그대로 저장 경로에 쓰면 Supabase Storage가
-    // "Invalid key"로 거부하는 경우가 있어서, 파일명 없이 UUID만 쓴다.
-    // (compressImage가 항상 JPEG로 변환하므로 확장자는 고정해도 된다.)
-    const path = `${user.id}/${crypto.randomUUID()}.jpg`;
-    const uploaded = await uploadPhoto(supabase, path, photo);
-
-    if (!uploaded) {
+    const path = await uploadPhoto(supabase, user.id, photo);
+    if (!path) {
       return { error: "사진 업로드에 실패했습니다." };
     }
     photoPaths.push(path);
@@ -144,10 +141,7 @@ export async function updateMemory(
     return { error: "사진이나 코멘트 중 하나는 입력해주세요." };
   }
 
-  // 원래 있던 사진 중 이번에 빠진(더 이상 keptPaths에 없는) 것들의 경로만 미리 파악해둔다.
-  // 실제 삭제는 DB 업데이트가 성공한 뒤에 한다 — 순서를 바꾸면, 새 사진 업로드가
-  // 실패해서 이 요청이 통째로 취소돼도 이미 지워버린 사진이 DB에는 여전히 남아있는 걸로
-  // 나오는 깨진 상태가 생긴다.
+  // 빠진 사진 경로만 미리 파악해두고, 실제 삭제는 DB 업데이트 성공 후에 한다.
   const { data: existingMemory } = await supabase
     .from("memories")
     .select("photo_urls")
@@ -160,13 +154,8 @@ export async function updateMemory(
 
   const newPaths: string[] = [];
   for (const photo of newPhotos) {
-    // 원본 파일명(한글 등)을 그대로 저장 경로에 쓰면 Supabase Storage가
-    // "Invalid key"로 거부하는 경우가 있어서, 파일명 없이 UUID만 쓴다.
-    // (compressImage가 항상 JPEG로 변환하므로 확장자는 고정해도 된다.)
-    const path = `${user.id}/${crypto.randomUUID()}.jpg`;
-    const uploaded = await uploadPhoto(supabase, path, photo);
-
-    if (!uploaded) {
+    const path = await uploadPhoto(supabase, user.id, photo);
+    if (!path) {
       return { error: "사진 업로드에 실패했습니다." };
     }
     newPaths.push(path);

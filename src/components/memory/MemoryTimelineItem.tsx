@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { MemoryCardMenu } from "@/components/memory/MemoryCardMenu";
 import { PhotoGallery } from "@/components/memory/PhotoGallery";
+import { PinIcon } from "@/components/icons/PinIcon";
+import { ChevronIcon } from "@/components/icons/ChevronIcon";
 import { formatCompanionParts } from "@/lib/format/companion";
 
 export function MemoryTimelineItem({
@@ -34,45 +36,13 @@ export function MemoryTimelineItem({
         }`}
       >
         {ordinal}번째 기록
-        <svg
-          aria-hidden
-          width="5"
-          height="9"
-          viewBox="0 0 7 12"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className={`shrink-0 transition-transform duration-200 ${
-            open ? "rotate-90" : "rotate-0"
-          }`}
-        >
-          <path
-            d="M1 1L6 6L1 11"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
+        <ChevronIcon open={open} width={5} height={9} />
       </button>
       {open && (
         <div className="rounded-xl bg-card p-4 shadow-[4px_4px_10px_rgba(0,0,0,0.15)]">
           <div className="flex items-center justify-between text-sm text-meta">
             <span className="inline-flex items-center gap-1">
-              <svg
-                aria-hidden
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="shrink-0 text-accent-text"
-              >
-                <path d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-                <path d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
-              </svg>
+              <PinIcon size={14} className="shrink-0 text-accent-text" />
               {memory.memory_date.slice(0, 10).replace(/-/g, ".")}
               {companionParts && (
                 <>

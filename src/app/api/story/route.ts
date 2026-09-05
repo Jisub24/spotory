@@ -57,9 +57,8 @@ export async function POST(request: Request) {
     );
   }
 
-  // 서명된 URL을 그대로 넘기면 OpenAI 서버가 그 URL을 직접 다운로드해야 하는데,
-  // 가끔 타임아웃이 나서(Unable to download content from the provided URL) 실패한다.
-  // 대신 우리 서버에서 직접 다운로드해 base64로 인코딩해서 넘긴다.
+  // OpenAI가 서명된 URL을 직접 다운로드하게 하면 가끔 타임아웃이 나서,
+  // 우리 서버가 대신 다운로드해 base64로 인코딩해 넘긴다.
   const photoPaths = memories.flatMap((memory) =>
     memory.photo_urls.slice(0, MAX_PHOTOS_PER_MEMORY)
   );

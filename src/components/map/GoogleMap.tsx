@@ -30,9 +30,7 @@ export function GoogleMap({
     let cancelled = false;
     let fallbackTimer: ReturnType<typeof setTimeout> | undefined;
 
-    // 구글 지도는 API 키/결제 인증에 실패해도 JS 에러를 던지지 않고,
-    // 대신 이 전역 콜백을 호출한다. 안 잡아두면 화면엔 빈 박스만 남고
-    // 원인을 알 방법이 없어서 명시적으로 에러 상태로 연결해둔다.
+    // 인증 실패 시 에러를 던지지 않고 이 전역 콜백을 호출하는 구글 지도 API 특성상 필요.
     (window as unknown as Record<string, () => void>).gm_authFailure = () => {
       if (!cancelled) {
         setError(
