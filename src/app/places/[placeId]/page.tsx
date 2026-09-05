@@ -130,7 +130,6 @@ export default async function PlaceDetailPage({
                   key={memory.id}
                   memory={memory}
                   ordinal={memories.length - i}
-                  defaultOpen={i === 0}
                   photos={memory.photo_urls
                     .map((path) => ({ path, url: urlByPath.get(path) }))
                     .filter(
