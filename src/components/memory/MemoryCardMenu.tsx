@@ -6,7 +6,15 @@ import { useState, useTransition } from "react";
 import { deleteMemory } from "@/app/places/actions";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 
-export function MemoryCardMenu({ memoryId }: { memoryId: string }) {
+export function MemoryCardMenu({
+  memoryId,
+  isLastOnPage = false,
+  fallbackHref = "/map",
+}: {
+  memoryId: string;
+  isLastOnPage?: boolean;
+  fallbackHref?: string;
+}) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -21,8 +29,12 @@ export function MemoryCardMenu({ memoryId }: { memoryId: string }) {
     setConfirmOpen(false);
     startTransition(async () => {
       const { placeDeleted } = await deleteMemory(memoryId);
-      if (placeDeleted) {
-        router.push("/map");
+      // 현재 페이지가 이 기록을 마지막으로 보여주고 있었으면(장소 자체가
+      // 삭제됐거나, 이 페이지의 목록이 이걸로 비게 되거나) 화면에 남을 게
+      // 없으니 이전 페이지로 돌아간다. 히스토리가 없으면 fallback으로 보낸다.
+      if (placeDeleted || isLastOnPage) {
+        if (window.history.length > 1) router.back();
+        else router.push(fallbackHref);
       }
     });
   };

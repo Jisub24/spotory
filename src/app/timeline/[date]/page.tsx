@@ -80,7 +80,11 @@ export default async function DayMemoriesPage({
                   <PinIcon size={14} className="shrink-0" />
                   {memory.places?.name}
                 </span>
-                <MemoryCardMenu memoryId={memory.id} />
+                <MemoryCardMenu
+                  memoryId={memory.id}
+                  isLastOnPage={memories.length === 1}
+                  fallbackHref="/timeline"
+                />
               </div>
               {companionParts && (
                 <p className="mt-2 text-xs text-meta">
