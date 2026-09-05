@@ -9,7 +9,6 @@ export function MemoryTimelineItem({
   memory,
   ordinal,
   photos,
-  defaultOpen = false,
 }: {
   memory: {
     id: string;
@@ -20,9 +19,8 @@ export function MemoryTimelineItem({
   };
   ordinal: number;
   photos: { path: string; url: string }[];
-  defaultOpen?: boolean;
 }) {
-  const [open, setOpen] = useState(defaultOpen);
+  const [open, setOpen] = useState(true);
   const companionParts = formatCompanionParts(memory.companion);
 
   return (
