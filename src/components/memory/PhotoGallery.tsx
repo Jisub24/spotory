@@ -106,7 +106,7 @@ export function PhotoGallery({
                   e.stopPropagation();
                   setOpenIndex(openIndex - 1);
                 }}
-                className="absolute left-3 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-black/50"
+                className="press-fade absolute left-3 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-black/50"
               >
                 <svg
                   width="11"
@@ -142,7 +142,7 @@ export function PhotoGallery({
                   e.stopPropagation();
                   setOpenIndex(openIndex + 1);
                 }}
-                className="absolute right-3 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-black/50"
+                className="press-fade absolute right-3 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-black/50"
               >
                 <svg
                   width="11"

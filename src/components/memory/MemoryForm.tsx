@@ -258,9 +258,7 @@ export function MemoryForm({
             <button
               key={type}
               type="button"
-              onClick={() =>
-                setCompanionType((prev) => (prev === type ? null : type))
-              }
+              onClick={() => setCompanionType(type)}
               className={`rounded-full border px-4 py-2 text-sm ${
                 companionType === type
                   ? "border-primary bg-primary text-black"

@@ -30,8 +30,8 @@ export default async function EditMemoryPage({
   );
 
   return (
-    <div className="min-h-dvh bg-gray-50 animate-page-enter">
-      <div className="flex items-center gap-3 bg-white px-6 py-4 shadow-sm">
+    <div className="min-h-dvh bg-page animate-page-enter">
+      <div className="flex items-center gap-3 bg-white px-6 py-4">
         <BackButton fallbackHref={`/places/${memory.place_id}`} />
         <h1 className="text-lg font-semibold">이야기 수정</h1>
       </div>

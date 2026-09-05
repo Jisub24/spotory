@@ -89,16 +89,32 @@ export function TopPlaces() {
             <Link
               key={place.id}
               href={`/places/${place.id}`}
-              className="w-32 shrink-0 overflow-hidden rounded-xl border border-gray-200 bg-white"
+              className="w-32 shrink-0 overflow-hidden rounded-xl border border-primary/30 bg-white shadow-[2px_2px_6px_rgba(0,0,0,0.1)]"
             >
-              <div className="h-24 w-full bg-gray-100">
-                {photoUrl && (
+              <div className="flex h-24 w-full items-center justify-center bg-primary/10">
+                {photoUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={photoUrl}
                     alt=""
                     className="h-full w-full object-cover"
                   />
+                ) : (
+                  <svg
+                    aria-hidden
+                    width="32"
+                    height="32"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="text-primary"
+                  >
+                    <path d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                  </svg>
                 )}
               </div>
               <div className="p-2">

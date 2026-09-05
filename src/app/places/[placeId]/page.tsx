@@ -1,11 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { MemoryCardMenu } from "@/components/memory/MemoryCardMenu";
-import { formatCompanionParts } from "@/lib/format/companion";
 import { BackButton } from "@/components/ui/BackButton";
-import { PhotoGallery } from "@/components/memory/PhotoGallery";
 import { AiSummary } from "@/components/memory/AiSummary";
+import { MemoryTimelineItem } from "@/components/memory/MemoryTimelineItem";
 
 const MIN_MEMORIES_FOR_SUMMARY = 3;
 
@@ -58,16 +56,26 @@ export default async function PlaceDetailPage({
   );
 
   return (
-    <div className="min-h-dvh bg-gray-50 animate-page-enter">
-      <div className="flex items-center gap-3 bg-white px-6 py-4 shadow-sm">
+    <div className="min-h-dvh bg-page animate-page-enter">
+      <div className="flex items-center gap-3 bg-white px-6 py-4">
         <BackButton fallbackHref="/map" />
-        <h1 className="flex-1 text-lg font-semibold">
-          <Link href="/map">{place.name}</Link>
-        </h1>
+        <div className="min-w-0 flex-1">
+          <h1 className="truncate text-lg font-semibold">
+            <Link href="/map">{place.name}</Link>
+          </h1>
+          {memories.length > 0 && (
+            <p className="mt-0.5 text-xs text-gray-500">
+              {memories.length}번째 방문 · 처음 기록한 날{" "}
+              {memories[memories.length - 1].memory_date
+                .slice(0, 10)
+                .replace(/-/g, ".")}
+            </p>
+          )}
+        </div>
         <Link
           href={`/places/${placeId}/new`}
           aria-label="이야기 쌓기"
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary"
+          className="press-strong flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary"
         >
           <svg
             width="16"
@@ -78,7 +86,7 @@ export default async function PlaceDetailPage({
           >
             <path
               d="M8 1.5V14.5M1.5 8H14.5"
-              stroke="white"
+              stroke="#515F80"
               strokeWidth="2.2"
               strokeLinecap="round"
             />
@@ -112,43 +120,26 @@ export default async function PlaceDetailPage({
         {memories.length === 0 && (
           <p className="text-sm text-gray-500">아직 남긴 기록이 없어요.</p>
         )}
-        {memories.map((memory) => {
-          const companionParts = formatCompanionParts(memory.companion);
-          return (
-            <div
-              key={memory.id}
-              className="rounded-xl border border-primary bg-white p-4"
-            >
-              <div className="flex items-center justify-between text-sm text-gray-500">
-                <span>
-                  {memory.memory_date.slice(0, 10).replace(/-/g, ".")}
-                  {companionParts && (
-                    <>
-                      {" "}
-                      <span className="font-semibold text-gray-700">
-                        {companionParts.who}
-                      </span>{" "}
-                      {companionParts.rest}
-                    </>
-                  )}
-                </span>
-                <MemoryCardMenu memoryId={memory.id} />
-              </div>
-              {memory.photo_urls.length > 0 && (
-                <PhotoGallery
+        {memories.length > 0 && (
+          <div className="relative">
+            {/* 기록들을 잇는 세로 타임라인 선 */}
+            <div className="absolute top-2 bottom-2 left-0.75 w-px bg-timeline-line" />
+            <div className="space-y-6">
+              {memories.map((memory, i) => (
+                <MemoryTimelineItem
+                  key={memory.id}
+                  memory={memory}
+                  ordinal={memories.length - i}
                   photos={memory.photo_urls
                     .map((path) => ({ path, url: urlByPath.get(path) }))
                     .filter(
                       (p): p is { path: string; url: string } => !!p.url
                     )}
                 />
-              )}
-              {memory.comment && (
-                <p className="mt-6 text-sm font-medium">{memory.comment}</p>
-              )}
+              ))}
             </div>
-          );
-        })}
+          </div>
+        )}
       </div>
     </div>
   );

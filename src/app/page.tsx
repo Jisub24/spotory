@@ -2,32 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
 import { Logo } from "@/components/ui/Logo";
 
 const TAGLINE_WORDS = ["장소마다", "쌓이는", "나만의 이야기"];
 
-type Phase = "checking" | "words" | "wordsExiting" | "brand";
+type Phase = "words" | "wordsExiting" | "brand";
 
 export default function SplashPage() {
   const router = useRouter();
-  const [phase, setPhase] = useState<Phase>("checking");
-
-  useEffect(() => {
-    (async () => {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      // 로그인된 사용자는 시작 화면을 거치지 않고 바로 홈으로 보낸다.
-      if (user) {
-        router.replace("/home");
-      } else {
-        setPhase("words");
-      }
-    })();
-  }, [router]);
+  // 이미 로그인한 사용자는 proxy.ts가 서버 단에서 바로 /home으로 보내기 때문에,
+  // 이 페이지가 실제로 렌더링되는 건 항상 로그아웃 상태일 때뿐이다.
+  const [phase, setPhase] = useState<Phase>("words");
 
   useEffect(() => {
     if (phase !== "words") return;
@@ -42,7 +27,14 @@ export default function SplashPage() {
   }, [phase]);
 
   return (
-    <div className="flex h-dvh flex-col items-center justify-center gap-4 bg-white px-8">
+    <div
+      className="flex h-dvh flex-col items-center justify-center gap-4 px-8"
+      style={{
+        backgroundColor: "#ffffff",
+        backgroundImage:
+          "radial-gradient(circle at 50% 35%, rgba(167,181,216,0.22), rgba(255,255,255,0) 60%)",
+      }}
+    >
       {(phase === "words" || phase === "wordsExiting") && (
         <div
           className={`flex flex-col items-center gap-2 ${
@@ -64,15 +56,32 @@ export default function SplashPage() {
       {phase === "brand" && (
         <>
           <Logo className="tagline-reveal text-3xl" />
-          <p className="text-sm text-gray-400">
+          <p className="text-base font-medium text-gray-600">
             장소마다 쌓이는 나만의 이야기
           </p>
           <button
             type="button"
             onClick={() => router.push("/login")}
-            className="entry-button-reveal mt-8 rounded-full bg-primary px-6 py-3 text-sm font-medium text-black"
+            className="entry-button-reveal mt-8 flex items-center gap-1.5 rounded-full bg-linear-to-b from-primary to-[#8fa0c9] px-6 py-3 text-sm font-medium text-black shadow-[0_8px_20px_rgba(167,181,216,0.5)]"
           >
             나만의 이야기 만들기
+            <svg
+              aria-hidden
+              width="14"
+              height="14"
+              viewBox="0 0 16 16"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="shrink-0"
+            >
+              <path
+                d="M1 8H15M15 8L11 4M15 8L11 12"
+                stroke="black"
+                strokeWidth="1.4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
           </button>
         </>
       )}

@@ -46,8 +46,8 @@ export default function TimelinePage() {
   };
 
   return (
-    <div className="min-h-dvh bg-gray-50">
-      <div className="flex items-center gap-3 bg-white px-6 py-4 shadow-sm">
+    <div className="min-h-dvh bg-page">
+      <div className="flex items-center gap-3 bg-white px-6 py-4">
         <BackButton fallbackHref="/home" />
         <h1 className="text-lg font-semibold">나의 기록</h1>
       </div>

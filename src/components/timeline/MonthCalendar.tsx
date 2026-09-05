@@ -76,8 +76,7 @@ export function MonthCalendar({
             type="button"
             onClick={goToPrevMonth}
             aria-label="이전 달"
-            className="-m-2 flex h-8 w-8 items-center justify-center p-2 text-2xl leading-none"
-            style={{ color: MARK_COLOR }}
+            className="press-fade text-primary -m-2 flex h-8 w-8 items-center justify-center p-2 text-2xl leading-none"
           >
             ‹
           </button>
@@ -86,8 +85,9 @@ export function MonthCalendar({
             onClick={goToNextMonth}
             aria-label="다음 달"
             disabled={isCurrentMonth}
-            className="-m-2 flex h-8 w-8 items-center justify-center p-2 text-2xl leading-none disabled:cursor-default"
-            style={{ color: isCurrentMonth ? "#d1d5db" : MARK_COLOR }}
+            className={`press-fade -m-2 flex h-8 w-8 items-center justify-center p-2 text-2xl leading-none disabled:cursor-default ${
+              isCurrentMonth ? "text-gray-300" : "text-primary"
+            }`}
           >
             ›
           </button>
@@ -111,16 +111,15 @@ export function MonthCalendar({
               type="button"
               disabled={!marked}
               onClick={() => onSelectDay(day)}
-              className="flex flex-col items-center gap-1 py-2 disabled:cursor-default"
+              className="press-strong flex flex-col items-center gap-1 py-2 disabled:cursor-default"
             >
               <span className="flex h-8 w-8 items-center justify-center rounded-full text-sm text-gray-800">
                 {day}
               </span>
               <span
-                className="h-1.5 w-1.5 rounded-full"
-                style={{
-                  backgroundColor: marked ? MARK_COLOR : "transparent",
-                }}
+                className={`h-1.5 w-1.5 rounded-full ${
+                  marked ? "day-dot bg-primary" : "bg-transparent"
+                }`}
               />
             </button>
           );

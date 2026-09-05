@@ -32,8 +32,8 @@ export function ConfirmDialog({
       style={{ position: "fixed", top: 0, right: 0, bottom: 0, left: 0 }}
       className={`z-50 flex ${
         isSheet
-          ? "items-end bg-black/20"
-          : "items-center bg-black/40 px-8 backdrop-blur-sm"
+          ? "items-end justify-center bg-black/20"
+          : "items-center justify-center bg-black/40 px-8 backdrop-blur-sm"
       }`}
       onClick={onCancel}
     >

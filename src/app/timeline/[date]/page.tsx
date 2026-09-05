@@ -53,13 +53,13 @@ export default async function DayMemoriesPage({
   const [y, m, d] = date.split("-").map(Number);
 
   return (
-    <div className="min-h-dvh bg-gray-50 animate-page-enter">
-      <div className="flex items-center gap-3 bg-white px-6 py-4 shadow-sm">
+    <div className="min-h-dvh bg-page animate-page-enter">
+      <div className="flex items-center gap-3 bg-white px-6 py-4">
         <BackButton fallbackHref="/timeline" />
         <h1 className="flex items-center gap-2 text-lg font-medium">
           {String(y).padStart(4, "0")}.{String(m).padStart(2, "0")}.
           {String(d).padStart(2, "0")}
-          <BooksIcon />
+          <BooksIcon color="#A7B5D8" />
         </h1>
       </div>
 
@@ -69,37 +69,54 @@ export default async function DayMemoriesPage({
           return (
             <div
               key={memory.id}
-              className="rounded-xl border border-primary bg-white p-4"
+              className="rounded-xl bg-card p-4 shadow-[4px_4px_10px_rgba(0,0,0,0.15)]"
             >
               <div className="flex items-center justify-between">
                 <span
-                  className="text-base font-semibold"
+                  className="inline-flex items-center gap-1 text-base font-semibold"
                   style={{ color: MARK_COLOR }}
                 >
+                  <svg
+                    aria-hidden
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="shrink-0"
+                  >
+                    <path d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                  </svg>
                   {memory.places?.name}
                 </span>
                 <MemoryCardMenu memoryId={memory.id} />
               </div>
               {companionParts && (
-                <p className="mt-2 text-sm text-gray-500">
-                  <span className="font-semibold text-gray-700">
+                <p className="mt-2 text-xs text-meta">
+                  <span className="font-semibold text-meta">
                     {companionParts.who}
                   </span>{" "}
                   {companionParts.rest}
                 </p>
               )}
+              {memory.comment && (
+                <p className="mt-5 text-sm font-medium text-body">
+                  {memory.comment}
+                </p>
+              )}
               {memory.photo_urls.length > 0 && (
                 <PhotoGallery
-                  className="mt-4 flex gap-2 overflow-x-auto"
+                  className="mt-5 flex gap-2 overflow-x-auto"
                   photos={memory.photo_urls
                     .map((path) => ({ path, url: urlByPath.get(path) }))
                     .filter(
                       (p): p is { path: string; url: string } => !!p.url
                     )}
                 />
-              )}
-              {memory.comment && (
-                <p className="mt-7 text-sm font-medium">{memory.comment}</p>
               )}
             </div>
           );
