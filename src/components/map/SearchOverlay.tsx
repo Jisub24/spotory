@@ -29,7 +29,9 @@ export function SearchOverlay({ map }: { map: google.maps.Map }) {
     if (!container) return;
 
     const autocomplete = new google.maps.places.PlaceAutocompleteElement({
-      locationBias: map.getBounds() ?? undefined,
+      // 지도가 막 생성된 시점엔 getBounds()가 아직 계산 전이라 undefined일 수 있어,
+      // 항상 값이 있는 중심 좌표 기준으로 편향을 잡는다.
+      locationBias: { center: map.getCenter()!, radius: 3000 },
     });
     // 포커스 시 WebKit이 커스텀 엘리먼트 자체에 기본으로 씌우는 테두리/그림자를 지운다.
     // (내부 input이 아니라 이 호스트 엘리먼트가 실제로 :focus를 받는 것으로 보인다.)
@@ -54,7 +56,7 @@ export function SearchOverlay({ map }: { map: google.maps.Map }) {
           // http(비보안) 환경이나 권한 거부 시 여기로 오는데, 원인 확인용으로 남겨둔다.
           console.warn("위치 정보를 가져오지 못했습니다:", err.message);
         },
-        { timeout: 5000 }
+        { timeout: 20000 }
       );
     }
 
