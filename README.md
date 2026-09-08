@@ -114,9 +114,9 @@ supabase/
 
 ![ERD](.github/screenshots/erd.jpg)
 
-- `USERS`는 Supabase Auth가 관리하는 `auth.users` 테이블입니다.
-- `PLACES.google_place_id`는 `created_by`와 묶어 유니크 인덱스를 걸어, 같은 사용자가 같은 장소를 두 번 저장하지 못하게 합니다.
-- `MEMORIES`가 삭제되어 특정 장소의 기록이 0개가 되면 해당 `PLACES` 행도 함께 삭제됩니다.
+- `USERS`는 Supabase Auth가 관리하는 `auth.users` 테이블이다.
+- `PLACES.google_place_id`는 `created_by`와 묶어 유니크 인덱스를 걸어, 같은 사용자가 같은 장소를 두 번 저장하지 못하게 한다.
+- `MEMORIES`가 삭제되어 특정 장소의 기록이 0개가 되면 해당 `PLACES` 행도 함께 삭제된다.
 
 ## 기술적 의사결정 / 트러블슈팅
 
