@@ -112,40 +112,7 @@ supabase/
 
 ## ERD
 
-```mermaid
-erDiagram
-    USERS ||--o{ PLACES : "생성"
-    USERS ||--o{ MEMORIES : "작성"
-    PLACES ||--o{ MEMORIES : "포함"
-
-    USERS {
-        uuid id PK
-    }
-
-    PLACES {
-        uuid id PK
-        text name
-        double lat
-        double lng
-        text google_place_id
-        uuid created_by FK
-        text ai_summary
-        timestamptz ai_summary_generated_at
-        integer ai_summary_memory_count
-        timestamptz created_at
-    }
-
-    MEMORIES {
-        uuid id PK
-        uuid place_id FK
-        uuid user_id FK
-        text_array photo_urls
-        text comment
-        timestamptz memory_date
-        text companion
-        timestamptz created_at
-    }
-```
+![ERD](.github/screenshots/erd.jpg)
 
 - `USERS`는 Supabase Auth가 관리하는 `auth.users` 테이블입니다.
 - `PLACES.google_place_id`는 `created_by`와 묶어 유니크 인덱스를 걸어, 같은 사용자가 같은 장소를 두 번 저장하지 못하게 합니다.
