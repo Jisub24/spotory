@@ -2,15 +2,6 @@
 
 > "장소마다 쌓인 순간들이 시간이 지나면 하나의 이야기가 된다"
 
-![Next.js](https://img.shields.io/badge/Next.js-16-000000?logo=next.js&logoColor=white)
-![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white)
-![Supabase](https://img.shields.io/badge/Supabase-Auth%20%7C%20DB%20%7C%20Storage-3ECF8E?logo=supabase&logoColor=white)
-![Google Maps](https://img.shields.io/badge/Google%20Maps-API-4285F4?logo=googlemaps&logoColor=white)
-![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4o--mini-412991?logo=openai&logoColor=white)
-![Vercel](https://img.shields.io/badge/Vercel-Deployed-000000?logo=vercel&logoColor=white)
-
 **[🔗 Spotory](https://spotory-peach.vercel.app)**
 
 ## 목차
@@ -22,8 +13,9 @@
 5. [기술 스택](#기술-스택)
 6. [프로젝트 구조](#프로젝트-구조)
 7. [데이터 모델](#데이터-모델)
-8. [기술적 의사결정 / 트러블슈팅](#기술적-의사결정--트러블슈팅)
-9. [향후 개선 사항](#향후-개선-사항)
+8. [ERD](#erd)
+9. [기술적 의사결정 / 트러블슈팅](#기술적-의사결정--트러블슈팅)
+10. [향후 개선 사항](#향후-개선-사항)
 
 ## 프로젝트 소개
 
@@ -66,13 +58,12 @@ Spotory는 **Spot(장소)** 과 **Story(이야기)** 를 합친 이름의 개인
 
 ## 기술 스택
 
-| 영역 | 기술 |
-|---|---|
-| Frontend | Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4 |
-| Map | Google Maps JavaScript API, Places API, Marker Clustering |
-| AI | OpenAI API (GPT-4o-mini) |
-| Backend | Supabase (Auth, Postgres, Storage, RLS) |
-| 배포 | Vercel |
+| 분류 | 툴 |
+| --- | --- |
+| **프론트엔드** | <img src="https://img.shields.io/badge/Next.js-000000?logo=next.js&logoColor=white"> <img src="https://img.shields.io/badge/React-61DAFB?logo=react&logoColor=white"> <img src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white"> <img src="https://img.shields.io/badge/TailwindCSS-06B6D4?logo=tailwindcss&logoColor=white"> |
+| **백엔드・DB** | <img src="https://img.shields.io/badge/Supabase-3ECF8E?logo=supabase&logoColor=white"> |
+| **API** | <img src="https://img.shields.io/badge/Google%20Maps-4285F4?logo=googlemaps&logoColor=white"> <img src="https://img.shields.io/badge/OpenAI-412991?logo=openai&logoColor=white"> |
+| **배포** | <img src="https://img.shields.io/badge/Vercel-000000?logo=vercel&logoColor=white"> |
 
 ## 프로젝트 구조
 
@@ -118,6 +109,14 @@ supabase/
 - `memories(id, place_id, user_id, photo_urls, comment, memory_date, companion, created_at)`
 - `(created_by, google_place_id)` 유니크 인덱스로 동일 장소 재검색 시 중복 생성 방지
 - RLS로 본인이 만든 장소/기록만 조회 가능
+
+## ERD
+
+![ERD](.github/screenshots/erd.jpg)
+
+- `USERS`는 Supabase Auth가 관리하는 `auth.users` 테이블이다.
+- `PLACES.google_place_id`는 `created_by`와 묶어 유니크 인덱스를 걸어, 같은 사용자가 같은 장소를 두 번 저장하지 못하게 한다.
+- `MEMORIES`가 삭제되어 특정 장소의 기록이 0개가 되면 해당 `PLACES` 행도 함께 삭제된다.
 
 ## 기술적 의사결정 / 트러블슈팅
 
