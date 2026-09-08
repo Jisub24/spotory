@@ -59,11 +59,11 @@ Spotory는 **Spot(장소)** 과 **Story(이야기)** 를 합친 이름의 개인
 ## 기술 스택
 
 | 분류 | 툴 |
-|---|---|
-| 프론트엔드 | ![Next.js](https://img.shields.io/badge/Next.js-16-000000?logo=next.js&logoColor=white) ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white) ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white) ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white) |
-| 백엔드・DB | ![Supabase](https://img.shields.io/badge/Supabase-Auth%20%7C%20DB%20%7C%20Storage-3ECF8E?logo=supabase&logoColor=white) |
-| API | ![Google Maps](https://img.shields.io/badge/Google%20Maps-API-4285F4?logo=googlemaps&logoColor=white) ![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4o--mini-412991?logo=openai&logoColor=white) |
-| 배포 | ![Vercel](https://img.shields.io/badge/Vercel-Deployed-000000?logo=vercel&logoColor=white) |
+| --- | --- |
+| **프론트엔드** | <img src="https://img.shields.io/badge/Next.js-000000?logo=next.js&logoColor=white"> <img src="https://img.shields.io/badge/React-61DAFB?logo=react&logoColor=white"> <img src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white"> <img src="https://img.shields.io/badge/TailwindCSS-06B6D4?logo=tailwindcss&logoColor=white"> |
+| **백엔드・DB** | <img src="https://img.shields.io/badge/Supabase-3ECF8E?logo=supabase&logoColor=white"> |
+| **API** | <img src="https://img.shields.io/badge/Google%20Maps-4285F4?logo=googlemaps&logoColor=white"> <img src="https://img.shields.io/badge/OpenAI-412991?logo=openai&logoColor=white"> |
+| **배포** | <img src="https://img.shields.io/badge/Vercel-000000?logo=vercel&logoColor=white"> |
 
 ## 프로젝트 구조
 
