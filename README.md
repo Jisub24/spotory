@@ -88,25 +88,6 @@ supabase/
 - `(created_by, google_place_id)` 유니크 인덱스로 동일 장소 재검색 시 중복 생성 방지
 - RLS로 본인이 만든 장소/기록만 조회 가능
 
-## 실행 방법
-
-```bash
-# 1. 의존성 설치
-npm install
-
-# 2. 환경 변수 설정
-cp .env.local.example .env.local
-# .env.local에 아래 값 입력
-# NEXT_PUBLIC_SUPABASE_URL=
-# NEXT_PUBLIC_SUPABASE_ANON_KEY=
-# NEXT_PUBLIC_GOOGLE_MAPS_KEY=
-# OPENAI_API_KEY=
-
-# 3. 개발 서버 실행
-npm run dev
-```
-
-브라우저에서 [http://localhost:3000](http://localhost:3000) 접속.
 
 ## 향후 개선 사항
 
