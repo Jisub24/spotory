@@ -2,7 +2,28 @@
 
 > "장소마다 쌓인 순간들이 시간이 지나면 하나의 이야기가 된다"
 
+![Next.js](https://img.shields.io/badge/Next.js-16-000000?logo=next.js&logoColor=white)
+![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-Auth%20%7C%20DB%20%7C%20Storage-3ECF8E?logo=supabase&logoColor=white)
+![Google Maps](https://img.shields.io/badge/Google%20Maps-API-4285F4?logo=googlemaps&logoColor=white)
+![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4o--mini-412991?logo=openai&logoColor=white)
+![Vercel](https://img.shields.io/badge/Vercel-Deployed-000000?logo=vercel&logoColor=white)
+
 **[🔗 Spotory](https://spotory-peach.vercel.app)**
+
+## 목차
+
+1. [프로젝트 소개](#프로젝트-소개)
+2. [개발 기간](#개발-기간)
+3. [스크린샷](#스크린샷)
+4. [주요 기능](#주요-기능)
+5. [기술 스택](#기술-스택)
+6. [프로젝트 구조](#프로젝트-구조)
+7. [데이터 모델](#데이터-모델)
+8. [기술적 의사결정 / 트러블슈팅](#기술적-의사결정--트러블슈팅)
+9. [향후 개선 사항](#향후-개선-사항)
 
 ## 프로젝트 소개
 
@@ -23,13 +44,23 @@ Spotory는 **Spot(장소)** 과 **Story(이야기)** 를 합친 이름의 개인
 | 3주차 | AI 장소 요약, 달력 기반 타임라인, 장소별 기록 상세, 가장 많이 찾은 장소, 지도-기록 상태 동기화 |
 | 4주차 | 반응형/완성도 작업, 코드 정리, Vercel 배포 및 배포 후 버그 수정 |
 
+## 스크린샷
+
+| ![스플래시](.github/screenshots/splash1.jpg) | ![스플래시](.github/screenshots/splash2.jpg) | ![지도](.github/screenshots/map.jpg) | ![기록 작성](.github/screenshots/write.jpg) |
+|:---:|:---:|:---:|:---:|
+| <sub>스플래시 화면</sub> | <sub>스플래시 화면</sub> | <sub>지도 화면</sub> | <sub>기록 작성 페이지</sub> |
+
+| ![기록 상세](.github/screenshots/place-detail.jpg) | ![나의 기록](.github/screenshots/mywrite.jpg) | ![날짜별 기록](.github/screenshots/dailywrite.jpg) |
+|:---:|:---:|:---:|
+| <sub>기록 상세 페이지</sub> | <sub>나의 기록 페이지</sub> | <sub>날짜별 기록 페이지</sub> |
+
 ## 주요 기능
 
-- **지도** — Google Maps 기반 지도, 장소 검색(자동완성 + 현재 위치 편향), 마커 클러스터링, 마커에 기록 개수 뱃지 표시
+- **지도** — Google Maps 기반 지도, 장소 검색(자동완성 + 현재 위치 편향), 마커 클러스터링, 마커에 기록 개수 뱃지 표시. 위치 권한을 허용하면 현재 위치, 거부하면 마지막으로 기록을 남긴 장소를 기준으로 지도가 열림
 - **기록(memory) CRUD** — 사진 다중 첨부, 날짜, 코멘트, 동행인 입력 / 수정 / 삭제, 마지막 기록 삭제 시 장소 자동 정리
 - **장소 상세 타임라인** — 한 장소에 쌓인 모든 기록을 최신순으로 열람
 - **나의 기록 보기** — 달력으로 날짜별 기록 탐색, 가장 많이 찾은 장소 Top 3
-- **AI 장소 요약** — 기록이 3개 이상 쌓인 장소에 한해 GPT-4o-mini가 방문 패턴을 2~3문장으로 요약, DB 캐싱 후 기록이 일정 개수 이상 늘어나거나 줄어들 때만 재생성
+- **AI 장소 요약** — 기록이 3개 이상 쌓인 장소부터 GPT-4o-mini가 방문 패턴을 2~3문장으로 요약. 이후 기록이 2개씩 늘어날 때마다 새로 생성해 갱신하고, 그 사이엔 캐싱된 요약을 그대로 보여줌. 기록을 삭제해 개수가 줄어들면 바로 갱신
 - **인증** — Supabase Auth 이메일 회원가입/로그인, 로그인 상태 기반 라우팅 가드
 - **공유** — 링크 공유 시 로고 썸네일(OG 이미지) 노출
 
@@ -88,6 +119,19 @@ supabase/
 - `(created_by, google_place_id)` 유니크 인덱스로 동일 장소 재검색 시 중복 생성 방지
 - RLS로 본인이 만든 장소/기록만 조회 가능
 
+## 기술적 의사결정 / 트러블슈팅
+
+**동일 장소 중복 저장 방지**
+같은 장소를 상호명과 도로명 주소 등 다르게 검색하면 구글이 서로 다른 결과를 줄 수 있어, 좌표·이름만으로 저장하면 같은 장소가 여러 행으로 쪼개질 위험이 있었다. 물리적 장소마다 고유한 구글의 `place_id`를 별도 컬럼(`google_place_id`)으로 저장하고 `(created_by, google_place_id)` 유니크 인덱스에 `upsert`를 걸어, 이미 저장된 장소면 기존 행을 그대로 재사용하도록 했다.
+
+**뒤로가기 시 방금 제출한 폼이 다시 보이는 문제**
+기록 작성/수정 성공 후 서버 액션에서 `redirect()`로 이동시켰더니, 브라우저 히스토리에 폼 제출 요청이 그대로 남아 뒤로가기를 누르면 방금 제출한 폼 화면이 다시 나타났다. 서버 `redirect()` 대신 클라이언트에서 `router.back()`(기존 장소) / `router.replace()`(새 장소)로 이동시키는 방식으로 바꿔 해결했다.
+
+**마지막 기록을 삭제해도 지도에 마커가 남는 문제**
+기록만 지우고 장소(`places`) 행은 그대로 두는 구조라, 한 장소의 마지막 기록을 지워도 지도엔 빈 마커가 계속 남아 있었다. 기록 삭제 후 해당 장소에 남은 기록 수를 다시 세어, 0개면 장소 행도 함께 삭제하도록 했다.
+
+**위치 권한을 허용해도 지도가 이동하지 않는 문제**
+`getCurrentPosition`의 타임아웃이 브라우저 권한 팝업에 응답을 기다리는 시간까지 포함해서 흘러가, 사용자가 팝업을 확인하고 누르는 사이에 요청이 먼저 타임아웃 나버리는 경우가 있었다. 타임아웃을 여유 있게 늘려 해결했다.
 
 ## 향후 개선 사항
 
