@@ -84,6 +84,7 @@ export function MemoryForm({
   // 네이티브 date input의 표시 형식은 기기 로캘을 따라가서 우리 마음대로 못 바꾸기 때문에,
   // 실제 input은 투명하게 깔아두고 그 위에 원하는 형식(YYYY.MM.DD)으로 직접 렌더링한다.
   const [date, setDate] = useState(memory?.memoryDate ?? today);
+  const dateInputRef = useRef<HTMLInputElement>(null);
 
   // 수정 모드에선 이미 업로드된 사진과 새로 추가하는 사진이 같은 줄에 섞여서 표시/삭제된다.
   const [photoItems, setPhotoItems] = useState<PhotoItem[]>(
@@ -233,8 +234,12 @@ export function MemoryForm({
         )}
       </div>
 
-      <div className="relative overflow-hidden rounded-lg border border-gray-300">
+      <div
+        className="relative flex cursor-pointer items-center justify-between overflow-hidden rounded-lg border border-gray-300 px-3 py-3"
+        onClick={() => dateInputRef.current?.showPicker?.()}
+      >
         <input
+          ref={dateInputRef}
           type="date"
           name="memoryDate"
           value={date}
@@ -244,9 +249,24 @@ export function MemoryForm({
           className="absolute inset-0 h-full w-full"
           style={{ opacity: 0, color: "transparent", background: "transparent" }}
         />
-        <div className="pointer-events-none px-3 py-3 text-gray-500">
+        <span className="pointer-events-none text-gray-500">
           {date.replace(/-/g, ".")}
-        </div>
+        </span>
+        <svg
+          aria-hidden
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="pointer-events-none shrink-0 text-gray-400"
+        >
+          <rect x="3" y="5" width="18" height="16" rx="2" />
+          <path d="M3 10h18M8 3v4M16 3v4" />
+        </svg>
       </div>
       <textarea
         name="comment"
